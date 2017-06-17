@@ -4,6 +4,7 @@ const TileTypes = {
   Movable: 1,
   Obstacle: 2,
   Character: 3,
+  Door: 4,
 }
 
 const CharacterOrientations = {
@@ -23,7 +24,33 @@ const map = [
   [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ],
   [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ],
   [ 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ],
-  [ 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1 ],
+  [ 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 4, 1, 1 ],
+]
+
+const otherMap = [
+  [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ],
+  [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1 ],
+  [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ],
+  [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ],
+  [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ],
+  [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ],
+  [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1 ],
+  [ 4, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ],
+  [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ],
+  [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ],
+]
+
+const mapDoors = [
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, otherMap, 0, 0 ],
 ]
 
 const interactions = [
@@ -36,6 +63,19 @@ const interactions = [
   [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
   [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
   [ 0, 0, 0, 0, 'Well hello there.', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+]
+
+const otherMapDoors = [
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+  [ map, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
   [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
 ]
 
@@ -58,6 +98,12 @@ const MovableTile = (props) => (
 const ObstacleTile = (props) => (
   <div style={Object.assign({}, TILE_STYLE, {
     background: 'grey'
+  })} />
+)
+
+const DoorTile = (props) => (
+  <div style={Object.assign({}, TILE_STYLE, {
+    background: 'red'
   })} />
 )
 
@@ -97,6 +143,7 @@ export default class Game extends Component {
 
     this.state = {
       map,
+      mapDoors,
       characterOrientation: CharacterOrientations.Down,
       message: null,
     }
@@ -236,6 +283,17 @@ export default class Game extends Component {
     const columnIndex = coords[1]
 
     if (map[rowIndex][columnIndex + 1] === TileTypes.Obstacle) return
+    if (map[rowIndex][columnIndex + 1] === TileTypes.Door) {
+      const newMap = this.state.mapDoors[rowIndex][columnIndex + 1]
+      if (newMap) {
+        const mapDoors = newMap === map ? mapDoors : otherMapDoors;
+        this.setState({
+          map: newMap,
+          mapDoors,
+        })
+      }
+      return
+    }
 
     map[rowIndex][columnIndex] = TileTypes.Movable
     map[rowIndex][columnIndex + 1] = TileTypes.Character
@@ -245,7 +303,7 @@ export default class Game extends Component {
 
   findCharacter() {
     let rowIndex, columnIndex;
-    map.forEach((row, currentRowIndex) => {
+    this.state.map.forEach((row, currentRowIndex) => {
       const foundColumnIndex = row.findIndex(tileType => {
         return tileType === TileTypes.Character
       })
@@ -262,7 +320,7 @@ export default class Game extends Component {
       <div style={{
         position: 'absolute'
       }}>
-        {map.map((row, idx) => (
+        {this.state.map.map((row, idx) => (
           <Row key={idx}>
             {row.map((tileType, idx) => {
               switch (tileType) {
@@ -274,6 +332,9 @@ export default class Game extends Component {
                 }
                 case TileTypes.Character: {
                   return <CharacterTile key={idx} orientation={this.state.characterOrientation} />
+                }
+                case TileTypes.Door: {
+                  return <DoorTile key={idx} />
                 }
                 default: {
                   return <MovableTile key={idx} />
