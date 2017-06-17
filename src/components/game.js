@@ -26,8 +26,21 @@ const map = [
   [ 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1 ],
 ]
 
-const TILE_HEIGHT = 25
-const TILE_WIDTH = 25
+const interactions = [
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 'Hi Jasmine!', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 'Games!', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, '<3', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 'Well hello there.', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+]
+
+const TILE_HEIGHT = 50
+const TILE_WIDTH = 50
 const TILE_STYLE = {
   float: 'left',
   height: TILE_HEIGHT,
@@ -59,6 +72,23 @@ const CharacterTile = (props) => (
   })} />
 )
 
+const Message = (props) => (
+  <div style={{
+    position: 'absolute',
+    bottom: '10px',
+    left: '10px',
+    width: '780px',
+    height: '50px',
+    background: 'rgba(255, 255, 255, 0.5)',
+    border: '2px solid black',
+    borderRadius: '5px',
+    padding: '5px',
+    boxSizing: 'border-box'
+  }}>
+    {props.message}
+  </div>
+)
+
 export default class Game extends Component {
   constructor() {
     super()
@@ -68,6 +98,7 @@ export default class Game extends Component {
     this.state = {
       map,
       characterOrientation: CharacterOrientations.Down,
+      message: null,
     }
   }
 
@@ -102,6 +133,34 @@ export default class Game extends Component {
 
   interact() {
     console.log('interact!')
+
+    if (this.state.message) {
+      this.setState({ message: null })
+      return
+    }
+
+    const { characterOrientation } = this.state
+    const coords = this.findCharacter()
+    const rowIndex = coords[0]
+    const columnIndex = coords[1]
+
+    let message = null
+
+    if (characterOrientation === CharacterOrientations.Down) {
+      message = interactions[rowIndex + 1][columnIndex]
+    }
+    if (characterOrientation === CharacterOrientations.Up) {
+      message = interactions[rowIndex - 1][columnIndex]
+    }
+    if (characterOrientation === CharacterOrientations.Left) {
+      message = interactions[rowIndex][columnIndex - 1]
+    }
+    if (characterOrientation === CharacterOrientations.Right) {
+      message = interactions[rowIndex][columnIndex + 1]
+    }
+
+    if (message) this.setState({ message })
+    if (!message) this.setState({ message: null })
   }
 
   moveCharacterDown() {
@@ -200,7 +259,9 @@ export default class Game extends Component {
 
   render() {
     return (
-      <div>
+      <div style={{
+        position: 'absolute'
+      }}>
         {map.map((row, idx) => (
           <Row key={idx}>
             {row.map((tileType, idx) => {
@@ -221,6 +282,7 @@ export default class Game extends Component {
             })}
           </Row>
         ))}
+        {this.state.message && <Message message={this.state.message} />}
       </div>
     )
   }
