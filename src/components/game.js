@@ -48,6 +48,111 @@ const CharacterTile = (props) => (
 )
 
 export default class Game extends Component {
+  constructor() {
+    super()
+
+    this.onKeyUp = this.onKeyUp.bind(this)
+
+    this.state = {
+      map,
+    }
+  }
+
+  componentDidMount() {
+    document.addEventListener('keyup', this.onKeyUp)
+    console.log('hi')
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('keyup', this.onKeyUp)
+  }
+
+  onKeyUp(evt) {
+    const { key } = evt
+    if (key === "ArrowDown") {
+      this.moveCharacterDown()
+    }
+    if (key === "ArrowUp") {
+      this.moveCharacterUp()
+    }
+    if (key === "ArrowLeft") {
+      this.moveCharacterLeft()
+    }
+    if (key === "ArrowRight") {
+      this.moveCharacterRight()
+    }
+  }
+
+  moveCharacterDown() {
+    const coords = this.findCharacter()
+    const rowIndex = coords[0]
+    const columnIndex = coords[1]
+    const { map } = this.state
+
+    if (map[rowIndex + 1][columnIndex] === TileTypes.Obstacle) return
+
+    map[rowIndex][columnIndex] = TileTypes.Movable
+    map[rowIndex + 1][columnIndex] = TileTypes.Character
+
+    this.setState({ map })
+  }
+
+  moveCharacterUp() {
+    const coords = this.findCharacter()
+    const rowIndex = coords[0]
+    const columnIndex = coords[1]
+    const { map } = this.state
+
+    if (map[rowIndex - 1][columnIndex] === TileTypes.Obstacle) return
+
+    map[rowIndex][columnIndex] = TileTypes.Movable
+    map[rowIndex - 1][columnIndex] = TileTypes.Character
+
+    this.setState({ map })
+  }
+
+  moveCharacterLeft() {
+    const coords = this.findCharacter()
+    const rowIndex = coords[0]
+    const columnIndex = coords[1]
+    const { map } = this.state
+
+    if (map[rowIndex][columnIndex - 1] === TileTypes.Obstacle) return
+
+    map[rowIndex][columnIndex] = TileTypes.Movable
+    map[rowIndex][columnIndex - 1] = TileTypes.Character
+
+    this.setState({ map })
+  }
+
+  moveCharacterRight() {
+    const coords = this.findCharacter()
+    const rowIndex = coords[0]
+    const columnIndex = coords[1]
+    const { map } = this.state
+
+    if (map[rowIndex][columnIndex + 1] === TileTypes.Obstacle) return
+
+    map[rowIndex][columnIndex] = TileTypes.Movable
+    map[rowIndex][columnIndex + 1] = TileTypes.Character
+
+    this.setState({ map })
+  }
+
+  findCharacter() {
+    let rowIndex, columnIndex;
+    map.forEach((row, currentRowIndex) => {
+      const foundColumnIndex = row.findIndex(tileType => {
+        return tileType === TileTypes.Character
+      })
+      if (foundColumnIndex !== -1) {
+        rowIndex = currentRowIndex
+        columnIndex = foundColumnIndex
+      }
+    })
+    return [rowIndex, columnIndex]
+  }
+
   render() {
     return (
       <div>
@@ -56,16 +161,16 @@ export default class Game extends Component {
             {row.map((tileType, idx) => {
               switch (tileType) {
                 case TileTypes.Movable: {
-                  return <MovableTile />
+                  return <MovableTile key={idx} />
                 }
                 case TileTypes.Obstacle: {
-                  return <ObstacleTile />
+                  return <ObstacleTile key={idx} />
                 }
                 case TileTypes.Character: {
-                  return <CharacterTile />
+                  return <CharacterTile key={idx} />
                 }
                 default: {
-                  return <MovableTile />
+                  return <MovableTile key={idx} />
                 }
               }
             })}
