@@ -1,4 +1,4 @@
-import { tiles as map } from './main'
+import * as map from './main'
 
 export const tiles = [
   [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ],

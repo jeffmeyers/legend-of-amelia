@@ -159,10 +159,20 @@ export default class Game extends Component {
     const rowIndex = coords[0]
     const columnIndex = coords[1]
 
-    if (map[rowIndex + 1][columnIndex] === TileTypes.Obstacle) return
+    if (rowIndex === this.state.map.tiles.length -1) return
+    if (map.tiles[rowIndex + 1][columnIndex] === TileTypes.Obstacle) return
+    if (map.tiles[rowIndex + 1][columnIndex] === TileTypes.Door) {
+      const newMap = this.state.map.doors[rowIndex + 1][columnIndex]
+      if (newMap) {
+        this.setState({
+          map: newMap,
+        })
+      }
+      return
+    }
 
-    map[rowIndex][columnIndex] = TileTypes.Movable
-    map[rowIndex + 1][columnIndex] = TileTypes.Character
+    map.tiles[rowIndex][columnIndex] = TileTypes.Movable
+    map.tiles[rowIndex + 1][columnIndex] = TileTypes.Character
 
     this.setState({ map })
   }
@@ -179,10 +189,20 @@ export default class Game extends Component {
     const rowIndex = coords[0]
     const columnIndex = coords[1]
 
-    if (map[rowIndex - 1][columnIndex] === TileTypes.Obstacle) return
+    if (rowIndex === 0) return
+    if (map.tiles[rowIndex - 1][columnIndex] === TileTypes.Obstacle) return
+    if (map.tiles[rowIndex - 1][columnIndex] === TileTypes.Door) {
+      const newMap = this.state.map.doors[rowIndex - 1][columnIndex]
+      if (newMap) {
+        this.setState({
+          map: newMap,
+        })
+      }
+      return
+    }
 
-    map[rowIndex][columnIndex] = TileTypes.Movable
-    map[rowIndex - 1][columnIndex] = TileTypes.Character
+    map.tiles[rowIndex][columnIndex] = TileTypes.Movable
+    map.tiles[rowIndex - 1][columnIndex] = TileTypes.Character
 
     this.setState({ map })
   }
@@ -199,10 +219,21 @@ export default class Game extends Component {
     const rowIndex = coords[0]
     const columnIndex = coords[1]
 
-    if (map[rowIndex][columnIndex - 1] === TileTypes.Obstacle) return
+    if (columnIndex === 0) return
+    if (map.tiles[rowIndex][columnIndex - 1] === TileTypes.Obstacle) return
+    if (map.tiles[rowIndex][columnIndex - 1] === TileTypes.Door) {
+      const newMap = this.state.map.doors[rowIndex][columnIndex - 1]
+      console.log({newMap})
+      if (newMap) {
+        this.setState({
+          map: newMap,
+        })
+      }
+      return
+    }
 
-    map[rowIndex][columnIndex] = TileTypes.Movable
-    map[rowIndex][columnIndex - 1] = TileTypes.Character
+    map.tiles[rowIndex][columnIndex] = TileTypes.Movable
+    map.tiles[rowIndex][columnIndex - 1] = TileTypes.Character
 
     this.setState({ map })
   }
@@ -219,6 +250,7 @@ export default class Game extends Component {
     const rowIndex = coords[0]
     const columnIndex = coords[1]
 
+    if (columnIndex === this.state.map.tiles[0].length - 1) return
     if (map.tiles[rowIndex][columnIndex + 1] === TileTypes.Obstacle) return
     if (map.tiles[rowIndex][columnIndex + 1] === TileTypes.Door) {
       const newMap = this.state.map.doors[rowIndex][columnIndex + 1]
