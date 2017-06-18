@@ -3,6 +3,12 @@ import React, { Component } from 'react'
 import * as mainMap from './maps/main'
 import * as otherMap from './maps/other'
 
+const safeGet = (matrix, row, column) => {
+  if (!matrix) return null;
+  if (!matrix[row]) return null;
+  return matrix[row][column];
+}
+
 const TileTypes = {
   Movable: 1,
   Obstacle: 2,
@@ -131,16 +137,16 @@ export default class Game extends Component {
     let message = null
 
     if (characterOrientation === CharacterOrientations.Down) {
-      message = map.interactions[rowIndex + 1][columnIndex]
+      message = safeGet(map.interactions, rowIndex + 1, columnIndex)
     }
     if (characterOrientation === CharacterOrientations.Up) {
-      message = map.interactions[rowIndex - 1][columnIndex]
+      message = safeGet(map.interactions, rowIndex - 1, columnIndex)
     }
     if (characterOrientation === CharacterOrientations.Left) {
-      message = map.interactions[rowIndex][columnIndex - 1]
+      message = safeGet(map.interactions, rowIndex, columnIndex - 1)
     }
     if (characterOrientation === CharacterOrientations.Right) {
-      message = map.interactions[rowIndex][columnIndex + 1]
+      message = safeGet(map.interactions, rowIndex, columnIndex + 1)
     }
 
     if (message) this.setState({ message })
