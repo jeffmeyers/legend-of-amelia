@@ -190,7 +190,7 @@ export default class Game extends Component {
       if (Math.floor(Math.random() * 10) > 5) {
         this.moveRandomEnemy()
       }
-    }, 1000)
+    }, 500)
   }
 
   componentWillUnmount() {
@@ -203,6 +203,7 @@ export default class Game extends Component {
 
   moveRandomEnemy() {
     const enemyCoords = sample(this.findEnemies());
+    if (!enemyCoords) return
     console.log({enemyCoords})
     const rowIndex = enemyCoords[0];
     const columnIndex = enemyCoords[1];
