@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { times, sample } from 'lodash'
 
 import * as mainMap from './maps/main'
 import * as otherMap from './maps/other'
@@ -14,6 +15,7 @@ const TileTypes = {
   Obstacle: 2,
   Character: 3,
   Door: 4,
+  Enemy: 5,
 }
 
 const CharacterOrientations = {
@@ -29,6 +31,10 @@ const Directions = {
   Down: 3,
   Up: 4,
 }
+
+const getRandomDirection = () => (
+  Directions[sample(Object.keys(Directions))]
+)
 
 const getNextRowIndex = (rowIndex, direction) => {
   if (direction === Directions.Up) {
@@ -111,6 +117,12 @@ const CharacterTile = (props) => (
   })} />
 )
 
+const EnemyTile = (props) => (
+  <div style={Object.assign({}, TILE_STYLE, {
+    background: 'yellow'
+  })} />
+)
+
 const Message = (props) => (
   <div style={{
     position: 'absolute',
@@ -128,27 +140,88 @@ const Message = (props) => (
   </div>
 )
 
+const Gameover = (props) => (
+  <div style={{
+    position: 'absolute',
+    top: '0',
+    left: '0',
+    width: '100%',
+    height: '100%',
+    background: 'black',
+    color: 'red',
+    textAlign: 'center',
+    paddingTop: '150px',
+    boxSizing: 'border-box',
+    fontSize: '32px'
+  }} onClick={() => props.restart()}>
+    Game over!
+    <div style={{
+      color: 'white',
+      fontSize: '18px'
+    }}>
+      Click to restart.
+    </div>
+  </div>
+)
+
+const defaultState = {
+  map: mainMap,
+  characterOrientation: CharacterOrientations.Down,
+  message: null,
+  challenge: null,
+  numHearts: 10,
+}
+
 export default class Game extends Component {
   constructor() {
     super()
 
     this.onKeyUp = this.onKeyUp.bind(this)
+    this.moveRandomEnemy = this.moveRandomEnemy.bind(this)
+    this.restart = this.restart.bind(this)
 
-    this.state = {
-      map: mainMap,
-      characterOrientation: CharacterOrientations.Down,
-      message: null,
-      challenge: null,
-    }
+    this.state = defaultState
   }
 
   componentDidMount() {
     document.addEventListener('keyup', this.onKeyUp)
-    console.log('hi')
+
+    setInterval(() => {
+      if (Math.floor(Math.random() * 10) > 5) {
+        this.moveRandomEnemy()
+      }
+    }, 1000)
   }
 
   componentWillUnmount() {
     document.removeEventListener('keyup', this.onKeyUp)
+  }
+
+  restart() {
+    this.setState(defaultState)
+  }
+
+  moveRandomEnemy() {
+    const enemyCoords = sample(this.findEnemies());
+    console.log({enemyCoords})
+    const rowIndex = enemyCoords[0];
+    const columnIndex = enemyCoords[1];
+    const direction = getRandomDirection();
+
+    const { map } = this.state
+    let nextRowIndex = getNextRowIndex(rowIndex, direction)
+    let nextColumnIndex = getNextColumnIndex(columnIndex, direction)
+
+    if (moveWouldBeOutOfBounds(nextRowIndex, nextColumnIndex, direction, this.state.map.tiles)) return
+    if (map.tiles[nextRowIndex][nextColumnIndex] === TileTypes.Obstacle) return
+    if (map.tiles[nextRowIndex][nextColumnIndex] === TileTypes.Enemy) return
+    if (map.tiles[nextRowIndex][nextColumnIndex] === TileTypes.Door) return
+    if (map.tiles[nextRowIndex][nextColumnIndex] === TileTypes.Character) return
+
+    map.tiles[rowIndex][columnIndex] = TileTypes.Movable
+    map.tiles[nextRowIndex][nextColumnIndex] = TileTypes.Enemy
+
+    this.setState({ map })
   }
 
   onKeyUp(evt) {
@@ -250,6 +323,11 @@ export default class Game extends Component {
     if (moveWouldBeOutOfBounds(nextRowIndex, nextColumnIndex, direction, this.state.map.tiles)) return
 
     if (map.tiles[nextRowIndex][nextColumnIndex] === TileTypes.Obstacle) return
+    if (map.tiles[nextRowIndex][nextColumnIndex] === TileTypes.Enemy) {
+      const { numHearts } = this.state
+      this.setState({ numHearts: numHearts - 1})
+      return
+    }
     if (map.tiles[nextRowIndex][nextColumnIndex] === TileTypes.Door) {
       const newMap = this.state.map.doors[nextRowIndex][nextColumnIndex]
       if (newMap) {
@@ -280,6 +358,18 @@ export default class Game extends Component {
     return [rowIndex, columnIndex]
   }
 
+  findEnemies() {
+    const enemies = [];
+    this.state.map.tiles.forEach((row, rowIndex) => {
+      row.forEach((tileType, columnIndex) => {
+        if (tileType === TileTypes.Enemy) {
+          enemies.push([rowIndex, columnIndex]);
+        }
+      })
+    })
+    return enemies;
+  }
+
   renderChallenge() {
     const Klass = this.state.challenge;
     return (
@@ -290,40 +380,46 @@ export default class Game extends Component {
         }}
         fail={() => {
           alert('fail')
-          this.setState({ challenge: null })
+          const { numHearts } = this.state
+          this.setState({ challenge: null, numHearts: numHearts - 1 })
         }}
       />
     )
   }
 
   render() {
+    console.log(this.findEnemies());
     return (
       <div style={{
         position: 'absolute',
         width: '1000px'
       }}>
+        {this.state.numHearts === 0 && <Gameover restart={this.restart} />}
         <div style={{
           float: 'left',
           width: '800px',
         }}>
-          {this.state.map.tiles.map((row, idx) => (
-            <Row key={idx}>
-              {row.map((tileType, idx) => {
+          {this.state.map.tiles.map((row, rowIndex) => (
+            <Row key={rowIndex}>
+              {row.map((tileType, columnIndex) => {
                 switch (tileType) {
                   case TileTypes.Movable: {
-                    return <MovableTile key={idx} />
+                    return <MovableTile key={columnIndex} />
                   }
                   case TileTypes.Obstacle: {
-                    return <ObstacleTile key={idx} />
+                    return <ObstacleTile key={columnIndex} />
                   }
                   case TileTypes.Character: {
-                    return <CharacterTile key={idx} orientation={this.state.characterOrientation} />
+                    return <CharacterTile key={columnIndex} orientation={this.state.characterOrientation} />
                   }
                   case TileTypes.Door: {
-                    return <DoorTile key={idx} />
+                    return <DoorTile key={columnIndex} />
+                  }
+                  case TileTypes.Enemy: {
+                    return <EnemyTile key={columnIndex} />
                   }
                   default: {
-                    return <MovableTile key={idx} />
+                    return <MovableTile key={columnIndex} />
                   }
                 }
               })}
@@ -336,6 +432,12 @@ export default class Game extends Component {
           width: '200px'
         }}>
           {this.state.challenge && this.renderChallenge()}
+        </div>
+        <div style={{
+          clear: 'left',
+          fontSize: '28px'
+        }}>
+          {times(this.state.numHearts, () => '❤️')}
         </div>
       </div>
     )
