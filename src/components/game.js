@@ -23,6 +23,55 @@ const CharacterOrientations = {
   Up: 4,
 }
 
+const Directions = {
+  Right: 1,
+  Left: 2,
+  Down: 3,
+  Up: 4,
+}
+
+const getNextRowIndex = (rowIndex, direction) => {
+  if (direction === Directions.Up) {
+    return rowIndex - 1
+  }
+
+  if (direction === Directions.Down) {
+    return rowIndex + 1
+  }
+
+  return rowIndex
+}
+
+const getNextColumnIndex = (columnIndex, direction) => {
+  if (direction === Directions.Left) {
+    return columnIndex - 1
+  }
+
+  if (direction === Directions.Right) {
+    return columnIndex + 1
+  }
+
+  return columnIndex
+}
+
+const moveWouldBeOutOfBounds = (nextRowIndex, nextColumnIndex, direction, tiles) => {
+  if (direction === Directions.Up) {
+    return nextRowIndex === -1
+  }
+
+  if (direction === Directions.Down) {
+    return nextRowIndex === tiles.length
+  }
+
+  if (direction === Directions.Left) {
+    return nextColumnIndex === -1
+  }
+
+  if (direction === Directions.Right) {
+    return nextColumnIndex === tiles[0].length
+  }
+}
+
 const TILE_HEIGHT = 50
 const TILE_WIDTH = 50
 const TILE_STYLE = {
@@ -105,16 +154,16 @@ export default class Game extends Component {
     console.log(evt)
     const { code } = evt
     if (code === "ArrowDown") {
-      this.moveCharacterDown()
+      this.moveCharacter(Directions.Down)
     }
     if (code === "ArrowUp") {
-      this.moveCharacterUp()
+      this.moveCharacter(Directions.Up)
     }
     if (code === "ArrowLeft") {
-      this.moveCharacterLeft()
+      this.moveCharacter(Directions.Left)
     }
     if (code === "ArrowRight") {
-      this.moveCharacterRight()
+      this.moveCharacter(Directions.Right)
     }
     if (code === "Space") {
       this.interact()
@@ -153,101 +202,25 @@ export default class Game extends Component {
     if (!message) this.setState({ message: null })
   }
 
-  moveCharacterDown() {
+  moveCharacter(direction) {
     const { map, characterOrientation } = this.state
 
-    if (characterOrientation !== CharacterOrientations.Down) {
+    if (direction === Directions.Down && characterOrientation !== CharacterOrientations.Down) {
       this.setState({ characterOrientation: CharacterOrientations.Down })
       return
     }
 
-    const coords = this.findCharacter()
-    const rowIndex = coords[0]
-    const columnIndex = coords[1]
-
-    if (rowIndex === this.state.map.tiles.length -1) return
-    if (map.tiles[rowIndex + 1][columnIndex] === TileTypes.Obstacle) return
-    if (map.tiles[rowIndex + 1][columnIndex] === TileTypes.Door) {
-      const newMap = this.state.map.doors[rowIndex + 1][columnIndex]
-      if (newMap) {
-        this.setState({
-          map: newMap,
-        })
-      }
-      return
-    }
-
-    map.tiles[rowIndex][columnIndex] = TileTypes.Movable
-    map.tiles[rowIndex + 1][columnIndex] = TileTypes.Character
-
-    this.setState({ map })
-  }
-
-  moveCharacterUp() {
-    const { map, characterOrientation } = this.state
-
-    if (characterOrientation !== CharacterOrientations.Up) {
+    if (direction === Directions.Up && characterOrientation !== CharacterOrientations.Up) {
       this.setState({ characterOrientation: CharacterOrientations.Up })
       return
     }
 
-    const coords = this.findCharacter()
-    const rowIndex = coords[0]
-    const columnIndex = coords[1]
-
-    if (rowIndex === 0) return
-    if (map.tiles[rowIndex - 1][columnIndex] === TileTypes.Obstacle) return
-    if (map.tiles[rowIndex - 1][columnIndex] === TileTypes.Door) {
-      const newMap = this.state.map.doors[rowIndex - 1][columnIndex]
-      if (newMap) {
-        this.setState({
-          map: newMap,
-        })
-      }
-      return
-    }
-
-    map.tiles[rowIndex][columnIndex] = TileTypes.Movable
-    map.tiles[rowIndex - 1][columnIndex] = TileTypes.Character
-
-    this.setState({ map })
-  }
-
-  moveCharacterLeft() {
-    const { map, characterOrientation } = this.state
-
-    if (characterOrientation !== CharacterOrientations.Left) {
+    if (direction === Directions.Left && characterOrientation !== CharacterOrientations.Left) {
       this.setState({ characterOrientation: CharacterOrientations.Left })
       return
     }
 
-    const coords = this.findCharacter()
-    const rowIndex = coords[0]
-    const columnIndex = coords[1]
-
-    if (columnIndex === 0) return
-    if (map.tiles[rowIndex][columnIndex - 1] === TileTypes.Obstacle) return
-    if (map.tiles[rowIndex][columnIndex - 1] === TileTypes.Door) {
-      const newMap = this.state.map.doors[rowIndex][columnIndex - 1]
-      console.log({newMap})
-      if (newMap) {
-        this.setState({
-          map: newMap,
-        })
-      }
-      return
-    }
-
-    map.tiles[rowIndex][columnIndex] = TileTypes.Movable
-    map.tiles[rowIndex][columnIndex - 1] = TileTypes.Character
-
-    this.setState({ map })
-  }
-
-  moveCharacterRight() {
-    const { map, characterOrientation } = this.state
-
-    if (characterOrientation !== CharacterOrientations.Right) {
+    if (direction === Directions.Right && characterOrientation !== CharacterOrientations.Right) {
       this.setState({ characterOrientation: CharacterOrientations.Right })
       return
     }
@@ -256,10 +229,15 @@ export default class Game extends Component {
     const rowIndex = coords[0]
     const columnIndex = coords[1]
 
-    if (columnIndex === this.state.map.tiles[0].length - 1) return
-    if (map.tiles[rowIndex][columnIndex + 1] === TileTypes.Obstacle) return
-    if (map.tiles[rowIndex][columnIndex + 1] === TileTypes.Door) {
-      const newMap = this.state.map.doors[rowIndex][columnIndex + 1]
+    let nextRowIndex = getNextRowIndex(rowIndex, direction)
+    let nextColumnIndex = getNextColumnIndex(columnIndex, direction)
+
+    if (moveWouldBeOutOfBounds(nextRowIndex, nextColumnIndex, direction, this.state.map.tiles)) return
+
+
+    if (map.tiles[nextRowIndex][nextColumnIndex] === TileTypes.Obstacle) return
+    if (map.tiles[nextRowIndex][nextColumnIndex] === TileTypes.Door) {
+      const newMap = this.state.map.doors[nextRowIndex][nextColumnIndex]
       if (newMap) {
         this.setState({
           map: newMap,
@@ -269,7 +247,7 @@ export default class Game extends Component {
     }
 
     map.tiles[rowIndex][columnIndex] = TileTypes.Movable
-    map.tiles[rowIndex][columnIndex + 1] = TileTypes.Character
+    map.tiles[nextRowIndex][nextColumnIndex] = TileTypes.Character
 
     this.setState({ map })
   }
