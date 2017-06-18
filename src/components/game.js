@@ -216,7 +216,11 @@ export default class Game extends Component {
     if (map.tiles[nextRowIndex][nextColumnIndex] === TileTypes.Obstacle) return
     if (map.tiles[nextRowIndex][nextColumnIndex] === TileTypes.Enemy) return
     if (map.tiles[nextRowIndex][nextColumnIndex] === TileTypes.Door) return
-    if (map.tiles[nextRowIndex][nextColumnIndex] === TileTypes.Character) return
+    if (map.tiles[nextRowIndex][nextColumnIndex] === TileTypes.Character) {
+      const { numHearts } = this.state
+      this.setState({ numHearts: numHearts - 1 })
+      return
+    }
 
     map.tiles[rowIndex][columnIndex] = TileTypes.Movable
     map.tiles[nextRowIndex][nextColumnIndex] = TileTypes.Enemy
@@ -438,6 +442,7 @@ export default class Game extends Component {
           fontSize: '28px'
         }}>
           {times(this.state.numHearts, () => '❤️')}
+          {times(10 - this.state.numHearts, () => '💔')}
         </div>
       </div>
     )
