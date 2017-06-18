@@ -138,6 +138,7 @@ export default class Game extends Component {
       map: mainMap,
       characterOrientation: CharacterOrientations.Down,
       message: null,
+      challenge: null,
     }
   }
 
@@ -175,7 +176,6 @@ export default class Game extends Component {
 
     if (this.state.message) {
       this.setState({ message: null })
-      return
     }
 
     const { map, characterOrientation } = this.state
@@ -183,26 +183,41 @@ export default class Game extends Component {
     const rowIndex = coords[0]
     const columnIndex = coords[1]
 
-    let message = null
+    let nextRowIndex, nextColumnIndex
 
     if (characterOrientation === CharacterOrientations.Down) {
-      message = safeGet(map.interactions, rowIndex + 1, columnIndex)
+      nextRowIndex = rowIndex + 1
+      nextColumnIndex = columnIndex
     }
     if (characterOrientation === CharacterOrientations.Up) {
-      message = safeGet(map.interactions, rowIndex - 1, columnIndex)
+      nextRowIndex = rowIndex - 1
+      nextColumnIndex = columnIndex
     }
     if (characterOrientation === CharacterOrientations.Left) {
-      message = safeGet(map.interactions, rowIndex, columnIndex - 1)
+      nextRowIndex = rowIndex
+      nextColumnIndex = columnIndex - 1
     }
     if (characterOrientation === CharacterOrientations.Right) {
-      message = safeGet(map.interactions, rowIndex, columnIndex + 1)
+      nextRowIndex = rowIndex
+      nextColumnIndex = columnIndex + 1
     }
 
+    const challenge = safeGet(map.challenges, nextRowIndex, nextColumnIndex)
+    if (challenge) {
+      console.log('A CHALLENGE')
+      this.setState({
+        challenge,
+      })
+      return
+    }
+
+    const message = safeGet(map.interactions, nextRowIndex, nextColumnIndex)
     if (message) this.setState({ message })
     if (!message) this.setState({ message: null })
   }
 
   moveCharacter(direction) {
+    this.setState({ message: null })
     const { map, characterOrientation } = this.state
 
     if (direction === Directions.Down && characterOrientation !== CharacterOrientations.Down) {
@@ -233,7 +248,6 @@ export default class Game extends Component {
     let nextColumnIndex = getNextColumnIndex(columnIndex, direction)
 
     if (moveWouldBeOutOfBounds(nextRowIndex, nextColumnIndex, direction, this.state.map.tiles)) return
-
 
     if (map.tiles[nextRowIndex][nextColumnIndex] === TileTypes.Obstacle) return
     if (map.tiles[nextRowIndex][nextColumnIndex] === TileTypes.Door) {
@@ -266,35 +280,63 @@ export default class Game extends Component {
     return [rowIndex, columnIndex]
   }
 
+  renderChallenge() {
+    const Klass = this.state.challenge;
+    return (
+      <Klass
+        pass={() => {
+          alert('pass')
+          this.setState({ challenge: null })
+        }}
+        fail={() => {
+          alert('fail')
+          this.setState({ challenge: null })
+        }}
+      />
+    )
+  }
+
   render() {
     return (
       <div style={{
-        position: 'absolute'
+        position: 'absolute',
+        width: '1000px'
       }}>
-        {this.state.map.tiles.map((row, idx) => (
-          <Row key={idx}>
-            {row.map((tileType, idx) => {
-              switch (tileType) {
-                case TileTypes.Movable: {
-                  return <MovableTile key={idx} />
+        <div style={{
+          float: 'left',
+          width: '800px',
+        }}>
+          {this.state.map.tiles.map((row, idx) => (
+            <Row key={idx}>
+              {row.map((tileType, idx) => {
+                switch (tileType) {
+                  case TileTypes.Movable: {
+                    return <MovableTile key={idx} />
+                  }
+                  case TileTypes.Obstacle: {
+                    return <ObstacleTile key={idx} />
+                  }
+                  case TileTypes.Character: {
+                    return <CharacterTile key={idx} orientation={this.state.characterOrientation} />
+                  }
+                  case TileTypes.Door: {
+                    return <DoorTile key={idx} />
+                  }
+                  default: {
+                    return <MovableTile key={idx} />
+                  }
                 }
-                case TileTypes.Obstacle: {
-                  return <ObstacleTile key={idx} />
-                }
-                case TileTypes.Character: {
-                  return <CharacterTile key={idx} orientation={this.state.characterOrientation} />
-                }
-                case TileTypes.Door: {
-                  return <DoorTile key={idx} />
-                }
-                default: {
-                  return <MovableTile key={idx} />
-                }
-              }
-            })}
-          </Row>
-        ))}
-        {this.state.message && <Message message={this.state.message} />}
+              })}
+            </Row>
+          ))}
+          {this.state.message && <Message message={this.state.message} />}
+        </div>
+        <div style={{
+          float: 'left',
+          width: '200px'
+        }}>
+          {this.state.challenge && this.renderChallenge()}
+        </div>
       </div>
     )
   }
