@@ -28,11 +28,12 @@ export default class MarshyChallenge extends Component {
     return (
       <div style={{
         position: 'absolute',
-        background: 'red'
+        background: '#777',
+        textAlign: 'center',
+        height: '100%'
       }}>
-        What is our dog's name?
-
-        <input type="text" onChange={this.onChange} />
+        What is our dog's name?<br />
+        <input type="text" onChange={this.onChange} /><br />
         <button onClick={this.onClick}>Submit</button>
       </div>
     )

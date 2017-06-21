@@ -90,7 +90,7 @@ const Row = (props) => <div style={{ clear: 'left' }}>{props.children}</div>;
 
 const MovableTile = (props) => (
   <div style={Object.assign({}, TILE_STYLE, {
-    background: 'green'
+    background: 'transparent'
   })} />
 )
 
@@ -114,7 +114,7 @@ const characterTileClass = (props) => {
 }
 
 const CharacterTile = (props) => (
-  <div style={Object.assign({}, TILE_STYLE, { background: 'green' })}>
+  <div style={Object.assign({}, TILE_STYLE, { background: 'transparent' })}>
     <div className={characterTileClass(props)} />
   </div>
 )
@@ -128,11 +128,11 @@ const EnemyTile = (props) => (
 const Message = (props) => (
   <div style={{
     position: 'absolute',
-    bottom: '75px',
+    bottom: '145px',
     left: '10px',
     width: '780px',
     height: '50px',
-    background: 'rgba(255, 255, 255, 0.5)',
+    background: 'rgba(255, 255, 255, 0.95)',
     padding: '5px',
     boxSizing: 'border-box'
   }}>
@@ -395,7 +395,7 @@ export default class Game extends Component {
         width: '1000px'
       }}>
         {this.state.numHearts === 0 && <Gameover restart={this.restart} />}
-        <div style={{
+        <div className="map" style={{
           float: 'left',
           width: '800px',
         }}>
@@ -435,7 +435,10 @@ export default class Game extends Component {
         </div>
         <div style={{
           clear: 'left',
-          fontSize: '48px'
+          fontSize: '48px',
+          textAlign: 'center',
+          width: '800px',
+          paddingTop: '10px'
         }}>
           {times(this.state.numHearts, () => '❤️')}
           {times(10 - this.state.numHearts, () => (
@@ -448,7 +451,9 @@ export default class Game extends Component {
         </div>
         <div style={{
           fontSize: '48px',
-          color: 'white'
+          color: 'white',
+          textAlign: 'center',
+          width: '800px'
         }}>
           {this.state.letters[0] || '🔒'}
           {this.state.letters[1] || '🔒'}
