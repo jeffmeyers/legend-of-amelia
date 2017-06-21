@@ -106,15 +106,17 @@ const DoorTile = (props) => (
   })} />
 )
 
+const characterTileClass = (props) => {
+  if (props.orientation === CharacterOrientations.Left) return 'characterLeft'
+  if (props.orientation === CharacterOrientations.Right) return 'characterRight'
+  if (props.orientation === CharacterOrientations.Up) return 'characterBack'
+  if (props.orientation === CharacterOrientations.Down) return 'characterFront'
+}
+
 const CharacterTile = (props) => (
-  <div style={Object.assign({}, TILE_STYLE, {
-    background: 'blue',
-    borderLeft: props.orientation === CharacterOrientations.Left ? '2px solid black' : '2px solid blue',
-    borderRight: props.orientation === CharacterOrientations.Right ? '2px solid black' : '2px solid blue',
-    borderTop: props.orientation === CharacterOrientations.Up ? '2px solid black' : '2px solid blue',
-    borderBottom: props.orientation === CharacterOrientations.Down ? '2px solid black' : '2px solid blue',
-    boxSizing: 'border-box'
-  })} />
+  <div style={Object.assign({}, TILE_STYLE, { background: 'green' })}>
+    <div className={characterTileClass(props)} />
+  </div>
 )
 
 const EnemyTile = (props) => (
@@ -126,13 +128,11 @@ const EnemyTile = (props) => (
 const Message = (props) => (
   <div style={{
     position: 'absolute',
-    bottom: '10px',
+    bottom: '75px',
     left: '10px',
     width: '780px',
     height: '50px',
     background: 'rgba(255, 255, 255, 0.5)',
-    border: '2px solid black',
-    borderRadius: '5px',
     padding: '5px',
     boxSizing: 'border-box'
   }}>
@@ -170,6 +170,7 @@ const defaultState = {
   message: null,
   challenge: null,
   numHearts: 10,
+  letters: [],
 }
 
 export default class Game extends Component {
@@ -204,7 +205,6 @@ export default class Game extends Component {
   moveRandomEnemy() {
     const enemyCoords = sample(this.findEnemies());
     if (!enemyCoords) return
-    console.log({enemyCoords})
     const rowIndex = enemyCoords[0];
     const columnIndex = enemyCoords[1];
     const direction = getRandomDirection();
@@ -230,7 +230,6 @@ export default class Game extends Component {
   }
 
   onKeyUp(evt) {
-    console.log(evt)
     const { code } = evt
     if (code === "ArrowDown") {
       this.moveCharacter(Directions.Down)
@@ -250,8 +249,6 @@ export default class Game extends Component {
   }
 
   interact() {
-    console.log('interact!')
-
     if (this.state.message) {
       this.setState({ message: null })
     }
@@ -282,7 +279,6 @@ export default class Game extends Component {
 
     const challenge = safeGet(map.challenges, nextRowIndex, nextColumnIndex)
     if (challenge) {
-      console.log('A CHALLENGE')
       this.setState({
         challenge,
       })
@@ -379,12 +375,12 @@ export default class Game extends Component {
     const Klass = this.state.challenge;
     return (
       <Klass
-        pass={() => {
-          alert('pass')
-          this.setState({ challenge: null })
+        pass={(letter) => {
+          const { letters } = this.state
+          letters.push(letter)
+          this.setState({ challenge: null, letters })
         }}
         fail={() => {
-          alert('fail')
           const { numHearts } = this.state
           this.setState({ challenge: null, numHearts: numHearts - 1 })
         }}
@@ -393,7 +389,6 @@ export default class Game extends Component {
   }
 
   render() {
-    console.log(this.findEnemies());
     return (
       <div style={{
         position: 'absolute',
@@ -440,10 +435,31 @@ export default class Game extends Component {
         </div>
         <div style={{
           clear: 'left',
-          fontSize: '28px'
+          fontSize: '48px'
         }}>
           {times(this.state.numHearts, () => '❤️')}
-          {times(10 - this.state.numHearts, () => '💔')}
+          {times(10 - this.state.numHearts, () => (
+            <span style={{
+              opacity: '0.5'
+            }}>
+              💔
+            </span>
+          ))}
+        </div>
+        <div style={{
+          fontSize: '48px',
+          color: 'white'
+        }}>
+          {this.state.letters[0] || '🔒'}
+          {this.state.letters[1] || '🔒'}
+          &nbsp;
+          {this.state.letters[2] || '🔒'}
+          {this.state.letters[3] || '🔒'}
+          {this.state.letters[4] || '🔒'}
+          {this.state.letters[5] || '🔒'}
+          {this.state.letters[6] || '🔒'}
+          {this.state.letters[7] || '🔒'}
+          {this.state.letters[8] || '🔒'}
         </div>
       </div>
     )

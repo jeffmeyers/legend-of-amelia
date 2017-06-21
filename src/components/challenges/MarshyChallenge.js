@@ -18,7 +18,7 @@ export default class MarshyChallenge extends Component {
 
   onClick() {
     if (this.state.answer.match(/marshy/i)) {
-      this.props.pass();
+      this.props.pass('H');
     } else {
       this.props.fail();
     }
