@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
 import { times, sample } from 'lodash'
 
-import * as mainMap from './maps/main'
-import * as otherMap from './maps/other'
+import * as map1 from './maps/1'
 
 const safeGet = (matrix, row, column) => {
   if (!matrix) return null;
@@ -78,8 +77,8 @@ const moveWouldBeOutOfBounds = (nextRowIndex, nextColumnIndex, direction, tiles)
   }
 }
 
-const TILE_HEIGHT = 50
-const TILE_WIDTH = 50
+const TILE_HEIGHT = 40
+const TILE_WIDTH = 40
 const TILE_STYLE = {
   float: 'left',
   height: TILE_HEIGHT,
@@ -165,7 +164,7 @@ const Gameover = (props) => (
 )
 
 const defaultState = {
-  map: mainMap,
+  map: map1,
   characterOrientation: CharacterOrientations.Down,
   message: null,
   challenge: null,
@@ -392,12 +391,13 @@ export default class Game extends Component {
     return (
       <div style={{
         position: 'absolute',
-        width: '1000px'
+        width: '640px'
       }}>
         {this.state.numHearts === 0 && <Gameover restart={this.restart} />}
         <div className="map" style={{
           float: 'left',
-          width: '800px',
+          width: '640px',
+          background: `url(${this.state.map.background})`
         }}>
           {this.state.map.tiles.map((row, rowIndex) => (
             <Row key={rowIndex}>
