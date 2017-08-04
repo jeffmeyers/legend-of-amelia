@@ -1,60 +1,105 @@
 import React, { Component } from 'react'
-import { SlidingPuzzle } from 'react-puzzle'
-import { times } from 'lodash';
+import { times, shuffle } from 'lodash'
 
-const tux = require('../../tux.jpg');
+const tuxImages = [
+  require('../../tux/0.png'),
+  require('../../tux/1.png'),
+  require('../../tux/2.png'),
+  require('../../tux/3.png'),
+  require('../../tux/4.png'),
+  require('../../tux/5.png'),
+  require('../../tux/6.png'),
+  require('../../tux/7.png'),
+]
 
 const tileStyle = {
   width: '98px',
   height: '98px',
   borderSizing: 'border-box',
   border: '1px solid black',
-  background: `url('${tux}')`,
   float: 'left',
-};
+}
 
 const tileStyleForIndex = (idx) => {
-  let backgroundPosition;
-  switch (idx) {
-    case 0:
-      backgroundPosition = '0px 0px';
-      break;
-    case 1:
-      backgroundPosition = '300px 0px';
-      break;
-    case 2:
-      backgroundPosition = '100px 0px';
-      break;
-    case 3:
-      backgroundPosition = '0px 450px';
-      break;
-    case 4:
-      backgroundPosition = '300px 450px';
-      break;
-    case 5:
-      backgroundPosition = '100px 450px';
-      break;
-    case 6:
-      backgroundPosition = '0px 900px';
-      break;
-    case 7:
-      backgroundPosition = '300px 900px';
-  }
   return Object.assign({}, tileStyle, {
-    backgroundPosition,
-    backgroundSize: '400px 533px',
-  });
-};
+    background: `url('${tuxImages[idx]}')`,
+  })
+}
 
 export default class TuxChallenge extends Component {
+  constructor() {
+    super()
+
+    this.state = {
+      puzzle: [
+        4, 7, 1,
+        0, 3, 5,
+        2, 6, -1
+      ]
+    }
+
+    this.tryMove = this.tryMove.bind(this)
+  }
+
+  shouldComponentUpdate() {
+    return false
+  }
+
+  tryMove(idx) {
+    const { puzzle } = this.state;
+    const positionInMatrix = puzzle.findIndex(val => val === idx)
+    const upAvail = puzzle[positionInMatrix - 3] === -1
+    const downAvail = puzzle[positionInMatrix + 3] === -1
+    const rightAvail = puzzle[positionInMatrix + 1] === -1
+    const leftAvail = puzzle[positionInMatrix - 1] === -1
+    
+
+    if (downAvail) {
+      puzzle[positionInMatrix + 3] = idx
+      puzzle[positionInMatrix] = -1
+    }
+
+    if (upAvail) {
+      puzzle[positionInMatrix - 3] = idx
+      puzzle[positionInMatrix] = -1
+    }
+
+    if (rightAvail) {
+      puzzle[positionInMatrix + 1] = idx
+      puzzle[positionInMatrix] = -1
+    }
+
+    if (leftAvail) {
+      puzzle[positionInMatrix - 1] = idx
+      puzzle[positionInMatrix] = -1
+    }
+
+    this.setState({ puzzle }, () => {
+      this.forceUpdate()
+      
+      if (this.state.puzzle === [0, 1, 2, 3, 4, 5, 6, 7, -1]) {
+        console.log('holy shit you won')
+      }
+    })
+  }
+
   render() {
     return (
-      <div style={{
-        width: '300px',
-        height: '300px',
-        background: '#eee'
-      }}>
-        {times(8, idx => <div key={idx} style={tileStyleForIndex(idx)} />)}
+      <div>
+        Oh no! Our dog is all scrambled. Can you help?
+        <div style={{
+          width: '300px',
+          height: '300px',
+          background: '#eee'
+        }}>
+          {this.state.puzzle.map(idx => (
+            <div
+              key={idx}
+              style={tileStyleForIndex(idx)}
+              onClick={() => this.tryMove(idx)}
+            />
+          ))}
+        </div>
       </div>
     );
   }
