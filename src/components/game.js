@@ -168,7 +168,7 @@ const defaultState = {
   map: map1,
   characterOrientation: CharacterOrientations.Down,
   message: null,
-  challenge: TuxChallenge,
+  challenge: null,
   numHearts: 10,
   letters: [],
 }

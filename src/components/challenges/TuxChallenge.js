@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { times, shuffle } from 'lodash'
+import { times, shuffle, isEqual } from 'lodash'
 
 const tuxImages = [
   require('../../tux/0.png'),
@@ -26,16 +26,15 @@ const tileStyleForIndex = (idx) => {
   })
 }
 
+const SOLUTION = [0, 1, 2, 3, 4, 5, 6, 7, -1]
+
 export default class TuxChallenge extends Component {
   constructor() {
     super()
 
     this.state = {
-      puzzle: [
-        4, 7, 1,
-        0, 3, 5,
-        2, 6, -1
-      ]
+      // puzzle: shuffle(SOLUTION)
+      puzzle: [0, 1, 2, 3, 4, 5, 6, -1, 7]
     }
 
     this.tryMove = this.tryMove.bind(this)
@@ -77,8 +76,8 @@ export default class TuxChallenge extends Component {
     this.setState({ puzzle }, () => {
       this.forceUpdate()
       
-      if (this.state.puzzle === [0, 1, 2, 3, 4, 5, 6, 7, -1]) {
-        console.log('holy shit you won')
+      if (isEqual(this.state.puzzle, SOLUTION)) {
+        this.props.pass('H');
       }
     })
   }
