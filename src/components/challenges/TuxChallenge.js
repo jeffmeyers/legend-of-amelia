@@ -84,12 +84,23 @@ export default class TuxChallenge extends Component {
 
   render() {
     return (
-      <div>
+      <div style={{
+        position: 'absolute',
+        left: '650px',
+        top: '0px',
+        width: '400px',
+        height: '400px',
+        color: 'black',
+        background: '#eee',
+        textAlign: 'center',
+        fontSize: '18px'
+      }}>
         Oh no! Our dog is all scrambled. Can you help?
         <div style={{
           width: '300px',
           height: '300px',
-          background: '#eee'
+          background: '#eee',
+          margin: '0 auto'
         }}>
           {this.state.puzzle.map(idx => (
             <div

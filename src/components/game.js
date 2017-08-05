@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { times, sample } from 'lodash'
-import TuxChallenge from './challenges/TuxChallenge';
+import PoopInvadersChallenge from './challenges/PoopInvadersChallenge';
 
 import * as map1 from './maps/1'
 
@@ -168,7 +168,7 @@ const defaultState = {
   map: map1,
   characterOrientation: CharacterOrientations.Down,
   message: null,
-  challenge: null,
+  challenge: PoopInvadersChallenge,
   numHearts: 10,
   letters: [],
 }
