@@ -84,11 +84,13 @@ export default class PoopInvadersChallenge extends Component {
 
     this.onKeyUp = this.onKeyUp.bind(this)
     this.moveEnemies = this.moveEnemies.bind(this)
+    this.moveMissiles = this.moveMissiles.bind(this)
   }
 
   componentDidMount() {
     document.addEventListener('keyup', this.onKeyUp)
     setInterval(this.moveEnemies, 1000)
+    setInterval(this.moveMissiles, 50)
   }
 
   onKeyUp(evt) {
@@ -172,6 +174,25 @@ export default class PoopInvadersChallenge extends Component {
     }
     
     this.setState({ map: newMap, direction: newDirection })
+  }
+
+  moveMissiles() {
+    const { missiles, map } = this.state
+    const newMissiles = times(10, () => times(10, 0))
+    missiles.forEach((row, rowIdx) => {
+      row.forEach((potentialMissile, potentialMissileIdx) => {
+        if (potentialMissile) {
+          if (rowIdx > 0 && map[rowIdx - 1][potentialMissileIdx] === TileTypes.Enemy) {
+            map[rowIdx - 1][potentialMissileIdx] = TileTypes.Nothing
+          } else {
+            if (rowIdx > 0) newMissiles[rowIdx - 1][potentialMissileIdx] = 1
+            newMissiles[rowIdx][potentialMissileIdx] = 0
+          }
+        }
+      })
+    })
+
+    this.setState({ map, missiles: newMissiles })
   }
 
   render() {
