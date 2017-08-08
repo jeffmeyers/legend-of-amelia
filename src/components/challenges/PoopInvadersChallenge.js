@@ -5,6 +5,7 @@ const TileTypes = {
   Nothing: 0,
   Enemy: 1,
   Character: 2,
+  Missile: 3,
 }
 
 const Directions = {
@@ -39,6 +40,13 @@ const CharacterTile = (props) => (
   }} />
 )
 
+const MissileTile = (props) => (
+  <div style={{
+    ...tileStyle,
+    background: 'yellow',
+  }} />
+)
+
 const tileFactory = (tileType, props) => {
   switch (tileType) {
   case TileTypes.Nothing:
@@ -47,6 +55,8 @@ const tileFactory = (tileType, props) => {
     return <EnemyTile {...props} />;
   case TileTypes.Character:
     return <CharacterTile {...props} />;
+  case TileTypes.Missile:
+    return <MissileTile {...props} />;
   }
 }
 
@@ -65,9 +75,11 @@ export default class PoopInvadersChallenge extends Component {
         [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
         [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
         [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 2, 0, 0, 0, 0, 0 ],
+        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
       ],
+      missiles: times(10, row => times(10, 0)),
       direction: Directions.Right,
+      characterIndex: 4
     }
 
     this.onKeyUp = this.onKeyUp.bind(this)
@@ -81,32 +93,16 @@ export default class PoopInvadersChallenge extends Component {
 
   onKeyUp(evt) {
     const { code } = evt
-    if (code === "ArrowLeft") {
-      const rowIndex = this.state.map.findIndex(row => row.indexOf(TileTypes.Character) !== -1)
-      const row = this.state.map[rowIndex]
-      const characterIndex = row.indexOf(TileTypes.Character)
-      if (characterIndex > 0) {
-        row[characterIndex - 1] = TileTypes.Character
-        row[characterIndex] = TileTypes.Nothing
-      }
-      const { map } = this.state
-      map[rowIndex] = row
-      this.setState({ map })
+    if (code === "ArrowLeft" && this.state.characterIndex > 0) {
+      this.setState({ characterIndex: this.state.characterIndex - 1 })
     }
-    if (code === "ArrowRight") {
-      const rowIndex = this.state.map.findIndex(row => row.indexOf(TileTypes.Character) !== -1)
-      const row = this.state.map[rowIndex]
-      const characterIndex = row.indexOf(TileTypes.Character)
-      if (characterIndex < (row.length - 1)) {
-        row[characterIndex + 1] = TileTypes.Character
-        row[characterIndex] = TileTypes.Nothing
-      }
-      const { map } = this.state
-      map[rowIndex] = row
-      this.setState({ map })
+    if (code === "ArrowRight" && this.state.characterIndex < 9) {
+      this.setState({ characterIndex: this.state.characterIndex + 1 })
     }
-    if (code === "Space") {
-      // fire!
+    if (code === "KeyA") {
+      const { missiles } = this.state
+      missiles[missiles.length - 2][this.state.characterIndex] = 1
+      this.setState({ missiles })
     }
   }
 
@@ -200,7 +196,23 @@ export default class PoopInvadersChallenge extends Component {
           border: '1px solid #333'
         }}>
           {this.state.map.map((row, rowIdx) => {
-            return row.map((tileType, tileIdx) => {
+            if (rowIdx === this.state.map.length - 1) {
+              // character row
+              return times(10, characterRowIdx => {
+                let tileType = TileTypes.Nothing
+                if (characterRowIdx === this.state.characterIndex) {
+                  tileType = TileTypes.Character
+                }
+                return tileFactory(tileType, {
+                  key: `${rowIdx}-${characterRowIdx}`,
+                })
+              })
+            }
+            return row.map((mapTileType, tileIdx) => {
+              let tileType = mapTileType
+              if (this.state.missiles[rowIdx][tileIdx]) {
+                tileType = TileTypes.Missile
+              }
               return tileFactory(tileType, {
                 key: `${rowIdx}-${tileIdx}`,
               })
