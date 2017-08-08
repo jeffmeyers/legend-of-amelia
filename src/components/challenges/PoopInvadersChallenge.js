@@ -65,7 +65,7 @@ export default class PoopInvadersChallenge extends Component {
         [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
         [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
         [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+        [ 0, 0, 0, 0, 2, 0, 0, 0, 0, 0 ],
       ],
       direction: Directions.Right,
     }
@@ -80,7 +80,34 @@ export default class PoopInvadersChallenge extends Component {
   }
 
   onKeyUp(evt) {
-
+    const { code } = evt
+    if (code === "ArrowLeft") {
+      const rowIndex = this.state.map.findIndex(row => row.indexOf(TileTypes.Character) !== -1)
+      const row = this.state.map[rowIndex]
+      const characterIndex = row.indexOf(TileTypes.Character)
+      if (characterIndex > 0) {
+        row[characterIndex - 1] = TileTypes.Character
+        row[characterIndex] = TileTypes.Nothing
+      }
+      const { map } = this.state
+      map[rowIndex] = row
+      this.setState({ map })
+    }
+    if (code === "ArrowRight") {
+      const rowIndex = this.state.map.findIndex(row => row.indexOf(TileTypes.Character) !== -1)
+      const row = this.state.map[rowIndex]
+      const characterIndex = row.indexOf(TileTypes.Character)
+      if (characterIndex < (row.length - 1)) {
+        row[characterIndex + 1] = TileTypes.Character
+        row[characterIndex] = TileTypes.Nothing
+      }
+      const { map } = this.state
+      map[rowIndex] = row
+      this.setState({ map })
+    }
+    if (code === "Space") {
+      // fire!
+    }
   }
 
   getMapEnemiesShiftedRight() {
@@ -88,10 +115,14 @@ export default class PoopInvadersChallenge extends Component {
     const newMap = []
     let enemyAtBoundary = false
     map.forEach((row, rowIdx) => {
-      const newRow = [TileTypes.Nothing, ...row]
-      newRow.pop()
-      if (newRow[newRow.length - 1] === TileTypes.Enemy) enemyAtBoundary = true
-      newMap.push(newRow)
+      if (row.findIndex(type => type === TileTypes.Enemy) !== -1) {
+        const newRow = [TileTypes.Nothing, ...row]
+        newRow.pop()
+        if (newRow[newRow.length - 1] === TileTypes.Enemy) enemyAtBoundary = true
+        newMap.push(newRow)
+      } else {
+        newMap.push(row)
+      }
     })
     return [newMap, enemyAtBoundary]
   }

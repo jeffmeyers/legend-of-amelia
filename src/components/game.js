@@ -230,6 +230,8 @@ export default class Game extends Component {
   }
 
   onKeyUp(evt) {
+    if (this.state.challenge) return;
+    
     const { code } = evt
     if (code === "ArrowDown") {
       this.moveCharacter(Directions.Down)
