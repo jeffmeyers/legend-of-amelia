@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { times, sample } from 'lodash'
 import PoopInvadersChallenge from './challenges/PoopInvadersChallenge';
+import TuxChallenge from './challenges/TuxChallenge';
 
 import * as map1 from './maps/1'
 
@@ -168,7 +169,7 @@ const defaultState = {
   map: map1,
   characterOrientation: CharacterOrientations.Down,
   message: null,
-  challenge: PoopInvadersChallenge,
+  challenge: TuxChallenge,
   numHearts: 10,
   letters: [],
 }
@@ -231,7 +232,7 @@ export default class Game extends Component {
 
   onKeyUp(evt) {
     if (this.state.challenge) return;
-    
+
     const { code } = evt
     if (code === "ArrowDown") {
       this.moveCharacter(Directions.Down)

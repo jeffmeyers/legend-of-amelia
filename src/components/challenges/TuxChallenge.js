@@ -34,7 +34,8 @@ export default class TuxChallenge extends Component {
 
     this.state = {
       // puzzle: shuffle(SOLUTION)
-      puzzle: [0, 1, 2, 3, 4, 5, 6, -1, 7]
+      // puzzle: [0, 1, 2, 3, 4, 5, 6, -1, 7]
+      puzzle: [-1, 3, 5, 0, 6, 1, 4, 7, 2]
     }
 
     this.tryMove = this.tryMove.bind(this)
