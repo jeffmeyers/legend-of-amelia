@@ -229,14 +229,18 @@ export default class PoopInvadersChallenge extends Component {
   }
 
   moveMissiles() {
-    const { missiles, map } = this.state
+    const { missiles, enemyMissiles, map } = this.state
     const newMissiles = times(10, () => times(10, 0))
     missiles.forEach((row, rowIdx) => {
       row.forEach((potentialMissile, potentialMissileIdx) => {
         if (potentialMissile) {
           if (rowIdx > 0 && map[rowIdx - 1][potentialMissileIdx] === TileTypes.Enemy) {
             map[rowIdx - 1][potentialMissileIdx] = TileTypes.Nothing
-          } else {
+          }
+          else if (rowIdx > 0 && enemyMissiles[rowIdx - 1][potentialMissileIdx]) {
+            enemyMissiles[rowIdx - 1][potentialMissileIdx] = 0
+          }
+          else {
             if (rowIdx > 0) newMissiles[rowIdx - 1][potentialMissileIdx] = 1
             newMissiles[rowIdx][potentialMissileIdx] = 0
           }
@@ -244,7 +248,7 @@ export default class PoopInvadersChallenge extends Component {
       })
     })
 
-    this.setState({ map, missiles: newMissiles }, this.checkForWin)
+    this.setState({ map, missiles: newMissiles, enemyMissiles }, this.checkForWin)
   }
 
   moveEnemyMissiles() {
