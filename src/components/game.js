@@ -169,7 +169,7 @@ const defaultState = {
   map: map1,
   characterOrientation: CharacterOrientations.Down,
   message: null,
-  challenge: TuxChallenge,
+  challenge: PoopInvadersChallenge,
   numHearts: 10,
   letters: [],
 }

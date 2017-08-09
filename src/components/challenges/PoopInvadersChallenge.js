@@ -1,11 +1,12 @@
 import React, { Component } from 'react'
-import { times, shuffle, isEqual } from 'lodash'
+import { times, shuffle, isEqual, random, sampleSize } from 'lodash'
 
 const TileTypes = {
   Nothing: 0,
   Enemy: 1,
   Character: 2,
   Missile: 3,
+  EnemyMissile: 4,
 }
 
 const Directions = {
@@ -47,6 +48,13 @@ const MissileTile = (props) => (
   }} />
 )
 
+const EnemyMissileTile = (props) => (
+  <div style={{
+    ...tileStyle,
+    background: 'red',
+  }} />
+)
+
 const tileFactory = (tileType, props) => {
   switch (tileType) {
   case TileTypes.Nothing:
@@ -57,6 +65,8 @@ const tileFactory = (tileType, props) => {
     return <CharacterTile {...props} />;
   case TileTypes.Missile:
     return <MissileTile {...props} />;
+  case TileTypes.EnemyMissile:
+    return <EnemyMissileTile {...props} />;
   }
 }
 
@@ -78,6 +88,7 @@ export default class PoopInvadersChallenge extends Component {
         [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
       ],
       missiles: times(10, row => times(10, 0)),
+      enemyMissiles: times(10, row => times(10, 0)),
       direction: Directions.Right,
       characterIndex: 4
     }
@@ -86,12 +97,16 @@ export default class PoopInvadersChallenge extends Component {
     this.moveEnemies = this.moveEnemies.bind(this)
     this.moveMissiles = this.moveMissiles.bind(this)
     this.checkForWin = this.checkForWin.bind(this)
+    this.spawnNewEnemyMissiles = this.spawnNewEnemyMissiles.bind(this)
+    this.moveEnemyMissiles = this.moveEnemyMissiles.bind(this)
   }
 
   componentDidMount() {
     document.addEventListener('keyup', this.onKeyUp)
     setInterval(this.moveEnemies, 1000)
     setInterval(this.moveMissiles, 50)
+    setInterval(this.moveEnemyMissiles, 1000)
+    setInterval(this.spawnNewEnemyMissiles, 2000)
   }
 
   checkForWin() {
@@ -119,6 +134,30 @@ export default class PoopInvadersChallenge extends Component {
       missiles[missiles.length - 2][this.state.characterIndex] = 1
       this.setState({ missiles })
     }
+  }
+
+  spawnNewEnemyMissiles() {
+    const shouldSpawn = random(0, 1)
+    if (!shouldSpawn) return
+    const enemyPositions = [];
+    this.state.map.forEach((row, rowIdx) => {
+      row.forEach((col, colIdx) => {
+        if (col === TileTypes.Enemy) {
+          enemyPositions.push([rowIdx, colIdx])
+        }
+      })
+    })
+    const numberOfEnemiesToSpawnMissiles = random(0, enemyPositions.length / 4)
+    const enemiesToSpawnMissiles = sampleSize(enemyPositions, numberOfEnemiesToSpawnMissiles)
+    const { enemyMissiles } = this.state
+    enemiesToSpawnMissiles.forEach(coords => {
+      const rowIdx = coords[0]
+      const colIdx = coords[1]
+      if (colIdx < this.state.map.length - 1) {
+        enemyMissiles[rowIdx][colIdx + 1] = 1
+      }
+    })
+    this.setState({ enemyMissiles })
   }
 
   getMapEnemiesShiftedRight() {
@@ -208,6 +247,25 @@ export default class PoopInvadersChallenge extends Component {
     this.setState({ map, missiles: newMissiles }, this.checkForWin)
   }
 
+  moveEnemyMissiles() {
+    const { enemyMissiles, missiles, map } = this.state
+    const newEnemyMissiles = times(10, () => times(10, 0))
+    enemyMissiles.forEach((row, rowIdx) => {
+      row.forEach((potentialMissile, potentialMissileIdx) => {
+        if (potentialMissile) {
+          if (rowIdx < this.state.map.length - 1 && missiles[rowIdx + 1][potentialMissileIdx]) {
+            missiles[rowIdx + 1][potentialMissileIdx] = 0
+          } else {
+            if (rowIdx < this.state.map.length - 1) newEnemyMissiles[rowIdx + 1][potentialMissileIdx] = 1
+            newEnemyMissiles[rowIdx][potentialMissileIdx] = 0
+          }
+        }
+      })
+    })
+
+    this.setState({ map, missiles, enemyMissiles: newEnemyMissiles }, this.checkForWin)
+  }
+
   render() {
     return (
       <div style={{
@@ -244,7 +302,10 @@ export default class PoopInvadersChallenge extends Component {
             }
             return row.map((mapTileType, tileIdx) => {
               let tileType = mapTileType
-              if (this.state.missiles[rowIdx][tileIdx]) {
+              if (this.state.enemyMissiles[rowIdx][tileIdx]) {
+                tileType = TileTypes.EnemyMissile
+              }
+              else if (this.state.missiles[rowIdx][tileIdx]) {
                 tileType = TileTypes.Missile
               }
               return tileFactory(tileType, {
