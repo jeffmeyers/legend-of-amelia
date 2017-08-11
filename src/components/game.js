@@ -4,7 +4,7 @@ import PoopInvadersChallenge from './challenges/PoopInvadersChallenge';
 import TuxChallenge from './challenges/TuxChallenge';
 import Bounce from 'bounce.js';
 
-import * as map1 from './maps/3'
+import * as map1 from './maps/1'
 
 const safeGet = (matrix, row, column) => {
   if (!matrix) return null;
