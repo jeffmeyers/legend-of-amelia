@@ -388,6 +388,7 @@ export default class Game extends Component {
     if (moveWouldBeOutOfBounds(nextRowIndex, nextColumnIndex, direction, this.state.map.tiles)) return
 
     if (map.tiles[nextRowIndex][nextColumnIndex] === TileTypes.Obstacle) return
+    if (map.tiles[nextRowIndex][nextColumnIndex] === TileTypes.Citizen) return
     if (map.tiles[nextRowIndex][nextColumnIndex] === TileTypes.Enemy) {
       const { numHearts } = this.state
       this.setState({ numHearts: numHearts - 1})
