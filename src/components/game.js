@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { times, sample } from 'lodash'
 import PoopInvadersChallenge from './challenges/PoopInvadersChallenge';
 import TuxChallenge from './challenges/TuxChallenge';
+import Bounce from 'bounce.js';
 
 import * as map1 from './maps/1'
 
@@ -97,7 +98,8 @@ const MovableTile = (props) => (
 
 const ObstacleTile = (props) => (
   <div style={Object.assign({}, TILE_STYLE, {
-    background: 'grey'
+    background: 'grey',
+    opacity: 0,
   })} />
 )
 
@@ -115,7 +117,7 @@ const characterTileClass = (props) => {
 }
 
 const CharacterTile = (props) => (
-  <div style={Object.assign({}, TILE_STYLE, { background: 'transparent' })}>
+  <div id='character' style={Object.assign({}, TILE_STYLE, { background: 'transparent' })}>
     <div className={characterTileClass(props)} />
   </div>
 )
@@ -165,13 +167,37 @@ const Gameover = (props) => (
   </div>
 )
 
+const Intro = (props) => (
+  <div style={{
+    position: 'absolute',
+    top: '0',
+    left: '0',
+    width: '100%',
+    height: '100%',
+    background: 'black',
+    color: 'white',
+    textAlign: 'center',
+    paddingTop: '150px',
+    boxSizing: 'border-box',
+    fontSize: '32px',
+    opacity: props.opacity,
+  }}>
+    {props.opacity > 0.8 && 'Amelink...'}
+    {props.opacity > 0.6 && props.opacity < 0.8 && '...Amelink...'}
+    {props.opacity > 0.4 && props.opacity < 0.6 && '...Aaaamelink...'}
+    {props.opacity > 0 && props.opacity < 0.4 && 'HEY, LISTEN!'}
+  </div>
+)
+
 const defaultState = {
   map: map1,
   characterOrientation: CharacterOrientations.Down,
   message: null,
-  challenge: PoopInvadersChallenge,
+  challenge: null,
   numHearts: 10,
   letters: [],
+  justStarted: true,
+  introOpacity: 1.0,
 }
 
 export default class Game extends Component {
@@ -186,6 +212,8 @@ export default class Game extends Component {
   }
 
   componentDidMount() {
+    this.start()
+
     document.addEventListener('keyup', this.onKeyUp)
 
     setInterval(() => {
@@ -197,6 +225,29 @@ export default class Game extends Component {
 
   componentWillUnmount() {
     document.removeEventListener('keyup', this.onKeyUp)
+  }
+
+  start() {
+    const id = setInterval(() => {
+      this.setState({ introOpacity: this.state.introOpacity - 0.1 })
+    }, 1000)
+
+    setTimeout(() => this.makeCharacterJump(), 7500)
+
+    setTimeout(() => {
+      clearInterval(id)
+    }, 11000)
+  }
+  
+  makeCharacterJump() {
+    var bounce = new Bounce();
+    bounce
+      .translate({
+        from: { x: 0, y: -25 },
+        to: { x: 0, y: 0 },
+        duration: 1500,
+      })
+      .applyTo(document.getElementById('character'));
   }
 
   restart() {
@@ -397,6 +448,7 @@ export default class Game extends Component {
         position: 'absolute',
         width: '640px'
       }}>
+        {this.state.justStarted && <Intro opacity={this.state.introOpacity} />}
         {this.state.numHearts === 0 && <Gameover restart={this.restart} />}
         <div className="map" style={{
           float: 'left',

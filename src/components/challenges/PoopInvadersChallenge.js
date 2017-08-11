@@ -259,7 +259,11 @@ export default class PoopInvadersChallenge extends Component {
         if (potentialMissile) {
           if (rowIdx < this.state.map.length - 1 && missiles[rowIdx + 1][potentialMissileIdx]) {
             missiles[rowIdx + 1][potentialMissileIdx] = 0
-          } else {
+          }
+          else if (rowIdx === this.state.map.length - 2 && this.state.characterIndex === potentialMissileIdx) {
+            this.gameOver()
+          }
+          else {
             if (rowIdx < this.state.map.length - 1) newEnemyMissiles[rowIdx + 1][potentialMissileIdx] = 1
             newEnemyMissiles[rowIdx][potentialMissileIdx] = 0
           }
@@ -268,6 +272,10 @@ export default class PoopInvadersChallenge extends Component {
     })
 
     this.setState({ map, missiles, enemyMissiles: newEnemyMissiles }, this.checkForWin)
+  }
+
+  gameOver() {
+    // game over
   }
 
   render() {
