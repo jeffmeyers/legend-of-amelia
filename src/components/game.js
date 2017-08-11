@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { times, sample } from 'lodash'
+import { times, sample, includes } from 'lodash'
 import PoopInvadersChallenge from './challenges/PoopInvadersChallenge';
 import TuxChallenge from './challenges/TuxChallenge';
 import Bounce from 'bounce.js';
@@ -7,9 +7,9 @@ import Bounce from 'bounce.js';
 import * as map1 from './maps/1'
 
 const safeGet = (matrix, row, column) => {
-  if (!matrix) return null;
-  if (!matrix[row]) return null;
-  return matrix[row][column];
+  if (!matrix) return null
+  if (!matrix[row]) return null
+  return matrix[row][column] || null
 }
 
 const TileTypes = {
@@ -207,6 +207,7 @@ const defaultState = {
   letters: [],
   justStarted: true,
   introOpacity: 1.0,
+  completedChallenges: [],
 }
 
 export default class Game extends Component {
@@ -222,8 +223,6 @@ export default class Game extends Component {
 
   componentDidMount() {
     this.start()
-
-    document.addEventListener('keyup', this.onKeyUp)
 
     setInterval(() => {
       if (Math.floor(Math.random() * 10) > 5) {
@@ -254,6 +253,7 @@ export default class Game extends Component {
         around to see if any of the villagers can help you.
         `
       })
+      document.addEventListener('keyup', this.onKeyUp)
     }, 11000)
   }
   
@@ -403,10 +403,20 @@ export default class Game extends Component {
       return
     }
 
+    let challenge = safeGet(map.triggers, rowIndex, columnIndex)
+    let message = null
+    const hasCompletedChallenge = includes(this.state.completedChallenges, challenge)
+    if (challenge && !hasCompletedChallenge) {
+      message = safeGet(map.interactions, rowIndex, columnIndex)
+    }
+    if (hasCompletedChallenge) {
+      challenge = null
+    }
+
     map.tiles[rowIndex][columnIndex] = TileTypes.Movable
     map.tiles[nextRowIndex][nextColumnIndex] = TileTypes.Character
 
-    this.setState({ map })
+    this.setState({ map, message, challenge })
   }
 
   findCharacter() {
@@ -437,12 +447,18 @@ export default class Game extends Component {
 
   renderChallenge() {
     const Klass = this.state.challenge;
+    if (includes(this.state.completedChallenges, Klass)) return null;
     return (
       <Klass
         pass={(letter, message = null) => {
           const { letters } = this.state
           letters.push(letter)
-          this.setState({ challenge: null, letters, message })
+          this.setState({
+            challenge: null,
+            letters,
+            message,
+            completedChallenges: [...this.state.completedChallenges, Klass],
+          })
         }}
         fail={() => {
           const { numHearts } = this.state
