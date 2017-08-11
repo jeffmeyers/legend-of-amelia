@@ -100,7 +100,7 @@ const MovableTile = (props) => (
 const ObstacleTile = (props) => (
   <div style={Object.assign({}, TILE_STYLE, {
     background: 'grey',
-    opacity: 0.75,
+    opacity: 0,
   })} />
 )
 
@@ -448,7 +448,7 @@ export default class Game extends Component {
         position: 'absolute',
         width: '640px'
       }}>
-        {/* {this.state.justStarted && <Intro opacity={this.state.introOpacity} />} */}
+        {this.state.justStarted && <Intro opacity={this.state.introOpacity} />}  
         {this.state.numHearts === 0 && <Gameover restart={this.restart} />}
         <div className="map" style={{
           float: 'left',
