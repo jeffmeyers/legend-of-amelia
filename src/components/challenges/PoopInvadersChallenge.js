@@ -70,6 +70,19 @@ const tileFactory = (tileType, props) => {
   }
 }
 
+const defaultMap = [
+  [ 1, 1, 1, 1, 1, 0, 0, 0, 0, 0 ],
+  [ 1, 1, 1, 1, 1, 0, 0, 0, 0, 0 ],
+  [ 1, 1, 1, 1, 1, 0, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+]
+
 export default class PoopInvadersChallenge extends Component {
   constructor() {
     super()
@@ -90,7 +103,10 @@ export default class PoopInvadersChallenge extends Component {
       missiles: times(10, row => times(10, 0)),
       enemyMissiles: times(10, row => times(10, 0)),
       direction: Directions.Right,
-      characterIndex: 4
+      characterIndex: 4,
+      currentRound: 0,
+      numberOfRounds: 10,
+      intervals: [],
     }
 
     this.onKeyUp = this.onKeyUp.bind(this)
@@ -103,10 +119,22 @@ export default class PoopInvadersChallenge extends Component {
 
   componentDidMount() {
     document.addEventListener('keyup', this.onKeyUp)
-    setInterval(this.moveEnemies, 1000)
-    setInterval(this.moveMissiles, 50)
-    setInterval(this.moveEnemyMissiles, 1000)
-    setInterval(this.spawnNewEnemyMissiles, 2000)
+    this.setIntervals()
+  }
+
+  setIntervals() {
+    this.setState({
+      intervals: [
+        setInterval(this.moveEnemies, 1000 - this.state.currentRound * 100),
+        setInterval(this.moveMissiles, 50),
+        setInterval(this.moveEnemyMissiles, 1000 - this.state.currentRound * 100),
+        setInterval(this.spawnNewEnemyMissiles, 2000 - this.state.currentRound * 100),
+      ]
+    })
+  }
+
+  cancelIntervals() {
+    this.state.intervals.forEach(id => clearInterval(id))
   }
 
   checkForWin() {
@@ -116,9 +144,20 @@ export default class PoopInvadersChallenge extends Component {
         if (col === TileTypes.Enemy) areAnyEnemiesRemaining = true
       })
     })
-    if (!areAnyEnemiesRemaining) {
+    if (!areAnyEnemiesRemaining && this.state.currentRound === this.state.numberOfRounds - 1) {
       this.props.pass('I');
+    } else if (!areAnyEnemiesRemaining) {
+      this.startNewRound()
     }
+  }
+
+  startNewRound() {
+    this.cancelIntervals()
+    this.setState({
+      currentRound: this.state.currentRound + 1,
+      map: defaultMap,
+      direction: Directions.Right,
+    }, () => this.setIntervals())
   }
 
   onKeyUp(evt) {
