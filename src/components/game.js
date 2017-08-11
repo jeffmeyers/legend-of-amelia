@@ -106,7 +106,8 @@ const ObstacleTile = (props) => (
 
 const DoorTile = (props) => (
   <div style={Object.assign({}, TILE_STYLE, {
-    background: 'red'
+    background: 'red',
+    opacity: 0,
   })} />
 )
 
@@ -140,11 +141,12 @@ const Message = (props) => (
     position: 'absolute',
     bottom: '145px',
     left: '10px',
-    width: '780px',
-    height: '50px',
+    width: '620px',
+    height: '100px',
     background: 'rgba(255, 255, 255, 0.95)',
     padding: '5px',
-    boxSizing: 'border-box'
+    boxSizing: 'border-box',
+    overflowY: 'scroll',
   }}>
     {props.message}
   </div>
@@ -429,10 +431,10 @@ export default class Game extends Component {
     const Klass = this.state.challenge;
     return (
       <Klass
-        pass={(letter) => {
+        pass={(letter, message = null) => {
           const { letters } = this.state
           letters.push(letter)
-          this.setState({ challenge: null, letters })
+          this.setState({ challenge: null, letters, message })
         }}
         fail={() => {
           const { numHearts } = this.state
@@ -496,7 +498,7 @@ export default class Game extends Component {
           clear: 'left',
           fontSize: '48px',
           textAlign: 'center',
-          width: '800px',
+          width: '650px',
           paddingTop: '10px'
         }}>
           {times(this.state.numHearts, () => '❤️')}
@@ -512,7 +514,7 @@ export default class Game extends Component {
           fontSize: '48px',
           color: 'white',
           textAlign: 'center',
-          width: '800px'
+          width: '650px'
         }}>
           {this.state.letters[0] || '🔒'}
           {this.state.letters[1] || '🔒'}

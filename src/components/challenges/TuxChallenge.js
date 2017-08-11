@@ -78,7 +78,12 @@ export default class TuxChallenge extends Component {
       this.forceUpdate()
       
       if (isEqual(this.state.puzzle, SOLUTION)) {
-        this.props.pass('H');
+        this.props.pass('H', `
+        Thank you so much!!! Oh, he looks good as new! Is there anything I can do for you?
+        ...You are trying to open a box? Hmmm, I think my parents told me on my birthday
+        that my age corresponded to both the code and the position of a treasure box. I wonder
+        if that could be helpful?
+        `);
       }
     })
   }
