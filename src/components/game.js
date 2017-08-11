@@ -245,7 +245,15 @@ export default class Game extends Component {
 
     setTimeout(() => {
       clearInterval(id)
-      this.setState({ justStarted: false })
+      this.setState({
+        justStarted: false,
+        message: `
+        Ahem. That's better. Today you are faced with many challenges. But none
+        so great as the one that faces you now. In order to proceed you must collect
+        clues in order to open the locked box in front of you. I would start checking
+        around to see if any of the villagers can help you.
+        `
+      })
     }, 11000)
   }
   
