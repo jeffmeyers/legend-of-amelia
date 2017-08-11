@@ -4,7 +4,7 @@ import PoopInvadersChallenge from './challenges/PoopInvadersChallenge';
 import TuxChallenge from './challenges/TuxChallenge';
 import Bounce from 'bounce.js';
 
-import * as map1 from './maps/1'
+import * as map1 from './maps/2'
 
 const safeGet = (matrix, row, column) => {
   if (!matrix) return null;
@@ -236,6 +236,7 @@ export default class Game extends Component {
 
     setTimeout(() => {
       clearInterval(id)
+      this.setState({ justStarted: false })
     }, 11000)
   }
   
@@ -448,7 +449,7 @@ export default class Game extends Component {
         position: 'absolute',
         width: '640px'
       }}>
-        {this.state.justStarted && <Intro opacity={this.state.introOpacity} />}
+        {/* {this.state.justStarted && <Intro opacity={this.state.introOpacity} />} */}
         {this.state.numHearts === 0 && <Gameover restart={this.restart} />}
         <div className="map" style={{
           float: 'left',
