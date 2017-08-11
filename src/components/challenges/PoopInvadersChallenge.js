@@ -285,7 +285,7 @@ export default class PoopInvadersChallenge extends Component {
         left: '650px',
         top: '0px',
         width: '400px',
-        height: '400px',
+        height: '420px',
         color: 'black',
         background: '#eee',
         textAlign: 'center',
@@ -325,6 +325,15 @@ export default class PoopInvadersChallenge extends Component {
               })
             })
           })}
+        </div>
+
+        <div>
+          <h4 style={{margin: '0px', padding: '0px'}}>Controls:</h4>
+          <ul style={{margin: '0px', padding: '0px'}}>
+            <li>A: fire</li>
+            <li>Left Arrow: move left</li>
+            <li>Right Arrow: move right</li>
+          </ul>
         </div>
       </div>
     );
