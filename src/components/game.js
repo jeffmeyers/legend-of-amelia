@@ -18,6 +18,7 @@ const TileTypes = {
   Character: 3,
   Door: 4,
   Enemy: 5,
+  Citizen: 6,
 }
 
 const CharacterOrientations = {
@@ -125,6 +126,12 @@ const CharacterTile = (props) => (
 const EnemyTile = (props) => (
   <div style={Object.assign({}, TILE_STYLE, {
     background: 'yellow'
+  })} />
+)
+
+const CitizenTile = (props) => (
+  <div style={Object.assign({}, TILE_STYLE, {
+    background: 'magenta'
   })} />
 )
 
@@ -333,16 +340,8 @@ export default class Game extends Component {
     }
 
     const challenge = safeGet(map.challenges, nextRowIndex, nextColumnIndex)
-    if (challenge) {
-      this.setState({
-        challenge,
-      })
-      return
-    }
-
     const message = safeGet(map.interactions, nextRowIndex, nextColumnIndex)
-    if (message) this.setState({ message })
-    if (!message) this.setState({ message: null })
+    this.setState({ message, challenge })
   }
 
   moveCharacter(direction) {
@@ -475,6 +474,9 @@ export default class Game extends Component {
                   case TileTypes.Enemy: {
                     return <EnemyTile key={columnIndex} />
                   }
+                  case TileTypes.Citizen: {
+                    return <CitizenTile key={columnIndex} />
+                  }
                   default: {
                     return <MovableTile key={columnIndex} />
                   }
@@ -514,14 +516,8 @@ export default class Game extends Component {
         }}>
           {this.state.letters[0] || '🔒'}
           {this.state.letters[1] || '🔒'}
-          &nbsp;
           {this.state.letters[2] || '🔒'}
           {this.state.letters[3] || '🔒'}
-          {this.state.letters[4] || '🔒'}
-          {this.state.letters[5] || '🔒'}
-          {this.state.letters[6] || '🔒'}
-          {this.state.letters[7] || '🔒'}
-          {this.state.letters[8] || '🔒'}
         </div>
       </div>
     )
