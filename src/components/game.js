@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { times, sample, includes, uniq } from 'lodash'
+import { times, sample, includes, uniq, clone } from 'lodash'
 import PoopInvadersChallenge from './challenges/PoopInvadersChallenge';
 import TuxChallenge from './challenges/TuxChallenge';
 import ISpyChallenge from './challenges/ISpyChallenge';
@@ -151,6 +151,10 @@ const Message = (props) => (
     overflowY: 'scroll',
   }}>
     {props.message}
+    <p style={{
+      textTransform: 'small-caps',
+      fontSize: '10px',
+    }}>hit space to continue</p>
   </div>
 )
 
@@ -236,10 +240,6 @@ export default class Game extends Component {
     }, 500)
   }
 
-  componentWillUnmount() {
-    document.removeEventListener('keyup', this.onKeyUp)
-  }
-
   checkSolution(evt) {
     evt.preventDefault()
     if (this.state.solution === '7314') {
@@ -271,8 +271,8 @@ export default class Game extends Component {
         around to see if any of the villagers can help you.
         `
       })
-      document.addEventListener('keyup', this.onKeyUp)
     }, 11000)
+    document.addEventListener('keyup', this.onKeyUp)
   }
   
   makeCharacterJump() {
@@ -318,7 +318,10 @@ export default class Game extends Component {
   }
 
   onKeyUp(evt) {
-    if (this.state.challenge) return;
+    if (this.state.challenge) {
+      console.info('keyup:ignore')
+      return
+    }
 
     const { code } = evt
     if (code === "ArrowDown") {
@@ -339,7 +342,9 @@ export default class Game extends Component {
   }
 
   interact() {
+    let justClearedMessage = false
     if (this.state.message) {
+      justClearedMessage = true
       this.setState({ message: null })
     }
 
@@ -367,7 +372,7 @@ export default class Game extends Component {
       nextColumnIndex = columnIndex + 1
     }
 
-    const challenge = safeGet(map.challenges, nextRowIndex, nextColumnIndex)
+    let challenge = safeGet(map.challenges, nextRowIndex, nextColumnIndex)
     let message = safeGet(map.interactions, nextRowIndex, nextColumnIndex)
     if (message && typeof message === 'function') {
       message = message(this.state.inventory, (clue) => {
@@ -376,10 +381,16 @@ export default class Game extends Component {
         })
       })
     }
+    const hasCompletedChallenge = includes(this.state.completedChallenges, challenge)
+    if (justClearedMessage || hasCompletedChallenge) {
+      message = null
+      challenge = null
+    }
     this.setState({ message, challenge })
   }
 
   moveCharacter(direction) {
+    console.info('character:move', { direction })
     // this.setState({ message: null })
     const { map, characterOrientation } = this.state
 
@@ -514,7 +525,7 @@ export default class Game extends Component {
         position: 'absolute',
         width: '640px'
       }}>
-        {this.state.justStarted && <Intro opacity={this.state.introOpacity} />}    
+        {this.state.justStarted && <Intro opacity={this.state.introOpacity} />}     
         {this.state.numHearts === 0 && <Gameover restart={this.restart} />}
         <div className="map" style={{
           float: 'left',

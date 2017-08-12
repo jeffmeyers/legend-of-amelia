@@ -101,7 +101,7 @@ const defaultState = {
   direction: Directions.Right,
   characterIndex: 4,
   currentRound: 0,
-  numberOfRounds: 10,
+  numberOfRounds: 5,
   intervals: [],
 }
 
@@ -122,18 +122,19 @@ export default class PoopInvadersChallenge extends Component {
     document.addEventListener('keyup', this.onKeyUp)
     this.setIntervals()
   }
-
+  
   componentWillUnmount() {
+    document.removeEventListener('keyup', this.onKeyUp)
     this.cancelIntervals()
   }
 
   setIntervals() {
     this.setState({
       intervals: [
-        setInterval(this.moveEnemies, 1000 - this.state.currentRound * 75),
+        setInterval(this.moveEnemies, 1000 - this.state.currentRound * 150),
         setInterval(this.moveMissiles, 50),
-        setInterval(this.moveEnemyMissiles, 1000 - this.state.currentRound * 75),
-        setInterval(this.spawnNewEnemyMissiles, 2000 - this.state.currentRound * 75),
+        setInterval(this.moveEnemyMissiles, 1000 - this.state.currentRound * 150),
+        setInterval(this.spawnNewEnemyMissiles, 2000 - this.state.currentRound * 150),
       ]
     })
   }
