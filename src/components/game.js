@@ -5,7 +5,7 @@ import TuxChallenge from './challenges/TuxChallenge';
 import ISpyChallenge from './challenges/ISpyChallenge';
 import Bounce from 'bounce.js';
 
-import * as map1 from './maps/4'
+import * as map1 from './maps/1'
 
 const safeGet = (matrix, row, column) => {
   if (!matrix) return null
@@ -221,6 +221,7 @@ export default class Game extends Component {
     this.onKeyUp = this.onKeyUp.bind(this)
     this.moveRandomEnemy = this.moveRandomEnemy.bind(this)
     this.restart = this.restart.bind(this)
+    this.checkSolution = this.checkSolution.bind(this)
 
     this.state = defaultState
   }
@@ -237,6 +238,19 @@ export default class Game extends Component {
 
   componentWillUnmount() {
     document.removeEventListener('keyup', this.onKeyUp)
+  }
+
+  checkSolution(evt) {
+    evt.preventDefault()
+    if (this.state.solution === '7314') {
+      this.setState({
+        message: '🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉'
+      })
+    } else {
+      this.setState({
+        message: 'Wrong. Maybe you should talk to a few more people?'
+      })
+    }
   }
 
   start() {
@@ -496,7 +510,7 @@ export default class Game extends Component {
         position: 'absolute',
         width: '640px'
       }}>
-        {/* {this.state.justStarted && <Intro opacity={this.state.introOpacity} />}   */}
+        {this.state.justStarted && <Intro opacity={this.state.introOpacity} />}   
         {this.state.numHearts === 0 && <Gameover restart={this.restart} />}
         <div className="map" style={{
           float: 'left',
@@ -546,10 +560,20 @@ export default class Game extends Component {
           textAlign: 'center',
           width: '650px'
         }}>
-          {this.state.letters[0] || '🔒'}
-          {this.state.letters[1] || '🔒'}
-          {this.state.letters[2] || '🔒'}
-          {this.state.letters[3] || '🔒'}
+          <form onSubmit={this.checkSolution}>
+            <input
+              type="text"
+              style={{
+                fontSize: '48px',
+                width: '192px',
+                background: '#eee',
+                outline: 'none',
+                border: 'none'
+              }}
+              placeholder="🔒🔒🔒🔒"
+              onChange={(evt) => this.setState({ solution: evt.target.value })}
+            />
+          </form>
         </div>
         <div style={{
           fontSize: '48px',
