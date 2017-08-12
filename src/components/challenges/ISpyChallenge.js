@@ -17,6 +17,7 @@ export default class ISpyChallenge extends Component {
       seven chickens to the farmer? You really are a lifesaver!
       `
     )
+    this.props.grantInventory('chickens')
   }
 
   render() {

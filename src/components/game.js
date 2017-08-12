@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { times, sample, includes } from 'lodash'
+import { times, sample, includes, uniq } from 'lodash'
 import PoopInvadersChallenge from './challenges/PoopInvadersChallenge';
 import TuxChallenge from './challenges/TuxChallenge';
 import ISpyChallenge from './challenges/ISpyChallenge';
@@ -141,7 +141,7 @@ const CitizenTile = (props) => (
 const Message = (props) => (
   <div style={{
     position: 'absolute',
-    bottom: '145px',
+    top: '290px',
     left: '10px',
     width: '620px',
     height: '100px',
@@ -210,6 +210,7 @@ const defaultState = {
   justStarted: true,
   introOpacity: 1.0,
   completedChallenges: [],
+  inventory: [],
 }
 
 export default class Game extends Component {
@@ -467,6 +468,11 @@ export default class Game extends Component {
           const { numHearts } = this.state
           this.setState({ challenge: null, numHearts: numHearts - 1 })
         }}
+        grantInventory={(item) => {
+          this.setState({
+            inventory: uniq([...this.state.inventory, item]),
+          })
+        }}
       />
     )
   }
@@ -547,6 +553,16 @@ export default class Game extends Component {
           {this.state.letters[1] || '🔒'}
           {this.state.letters[2] || '🔒'}
           {this.state.letters[3] || '🔒'}
+        </div>
+        <div style={{
+          fontSize: '48px',
+          color: 'white',
+          textAlign: 'center',
+          width: '650px',
+        }}>
+          {includes(this.state.inventory, 'chickens') &&
+            '🐓'
+          }
         </div>
       </div>
     )
