@@ -380,7 +380,7 @@ export default class Game extends Component {
   }
 
   moveCharacter(direction) {
-    this.setState({ message: null })
+    // this.setState({ message: null })
     const { map, characterOrientation } = this.state
 
     if (direction === Directions.Down && characterOrientation !== CharacterOrientations.Down) {
@@ -442,7 +442,11 @@ export default class Game extends Component {
     map.tiles[rowIndex][columnIndex] = TileTypes.Movable
     map.tiles[nextRowIndex][nextColumnIndex] = TileTypes.Character
 
-    this.setState({ map, message, challenge })
+    const newState = { map }
+    if (message) newState.message = message
+    if (challenge) newState.challenge = challenge
+
+    this.setState(newState)
   }
 
   findCharacter() {
