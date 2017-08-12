@@ -155,6 +155,12 @@ export default class PoopInvadersChallenge extends Component {
         position and if you add one more the value as well.
         `
       );
+      this.props.grantClue(
+        `
+        The fish statues represent the position and, if you add one more, the value,
+        of part of the code.
+        `
+      )
     } else if (!areAnyEnemiesRemaining) {
       this.startNewRound()
     }
