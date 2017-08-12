@@ -510,7 +510,7 @@ export default class Game extends Component {
         position: 'absolute',
         width: '640px'
       }}>
-        {this.state.justStarted && <Intro opacity={this.state.introOpacity} />}   
+        {this.state.justStarted && <Intro opacity={this.state.introOpacity} />}    
         {this.state.numHearts === 0 && <Gameover restart={this.restart} />}
         <div className="map" style={{
           float: 'left',
@@ -586,12 +586,12 @@ export default class Game extends Component {
           }
         </div>
         <div style={{
-          fontSize: '16px',
+          fontSize: '10px',
           color: 'white',
-          textAlign: 'center',
+          textAlign: 'left',
           width: '650px',
         }}>
-          <ul>
+          <ul style={{ listStyle: 'none' }}>
             {this.state.clues.map((clue, idx) => (
               <li key={idx}>
                 {clue}

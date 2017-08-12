@@ -6,6 +6,8 @@ export const name = 'map2';
 
 export const background = require('../../maps/8.png');
 
+export const character = require('../../sadLittleFatBoy.png')
+
 const boyWithDog = `
 Hey!! You look smart. Could you please help me? My parents
 just gave me a puppy for my 4th birthday and told me to take

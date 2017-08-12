@@ -123,6 +123,10 @@ export default class PoopInvadersChallenge extends Component {
     this.setIntervals()
   }
 
+  componentWillUnmount() {
+    this.cancelIntervals()
+  }
+
   setIntervals() {
     this.setState({
       intervals: [
