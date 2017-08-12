@@ -83,32 +83,33 @@ const defaultMap = [
   [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
 ]
 
+const defaultState = {
+  map: [
+    [ 1, 1, 1, 1, 1, 0, 0, 0, 0, 0 ],
+    [ 1, 1, 1, 1, 1, 0, 0, 0, 0, 0 ],
+    [ 1, 1, 1, 1, 1, 0, 0, 0, 0, 0 ],
+    [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+    [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+    [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+    [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+    [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+    [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+    [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+  ],
+  missiles: times(10, row => times(10, 0)),
+  enemyMissiles: times(10, row => times(10, 0)),
+  direction: Directions.Right,
+  characterIndex: 4,
+  currentRound: 0,
+  numberOfRounds: 10,
+  intervals: [],
+}
+
 export default class PoopInvadersChallenge extends Component {
   constructor() {
     super()
 
-    this.state = {
-      map: [
-        [ 1, 1, 1, 1, 1, 0, 0, 0, 0, 0 ],
-        [ 1, 1, 1, 1, 1, 0, 0, 0, 0, 0 ],
-        [ 1, 1, 1, 1, 1, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-      ],
-      missiles: times(10, row => times(10, 0)),
-      enemyMissiles: times(10, row => times(10, 0)),
-      direction: Directions.Right,
-      characterIndex: 4,
-      currentRound: 0,
-      numberOfRounds: 10,
-      intervals: [],
-    }
-
+    this.state = defaultState
     this.onKeyUp = this.onKeyUp.bind(this)
     this.moveEnemies = this.moveEnemies.bind(this)
     this.moveMissiles = this.moveMissiles.bind(this)
@@ -125,10 +126,10 @@ export default class PoopInvadersChallenge extends Component {
   setIntervals() {
     this.setState({
       intervals: [
-        setInterval(this.moveEnemies, 1000 - this.state.currentRound * 100),
+        setInterval(this.moveEnemies, 1000 - this.state.currentRound * 75),
         setInterval(this.moveMissiles, 50),
-        setInterval(this.moveEnemyMissiles, 1000 - this.state.currentRound * 100),
-        setInterval(this.spawnNewEnemyMissiles, 2000 - this.state.currentRound * 100),
+        setInterval(this.moveEnemyMissiles, 1000 - this.state.currentRound * 75),
+        setInterval(this.spawnNewEnemyMissiles, 2000 - this.state.currentRound * 75),
       ]
     })
   }
@@ -145,7 +146,15 @@ export default class PoopInvadersChallenge extends Component {
       })
     })
     if (!areAnyEnemiesRemaining && this.state.currentRound === this.state.numberOfRounds - 1) {
-      this.props.pass('I');
+      this.props.pass(
+        'I',
+        `
+        (Left fish statue talking) You have defeated our minions oh great heroine! My
+        partner and I have sworn to guard the secrets of the treasure you seek. As a
+        reward for your valor we will give you a clue. My partner and I represent the
+        position and if you add one more the value as well.
+        `
+      );
     } else if (!areAnyEnemiesRemaining) {
       this.startNewRound()
     }
@@ -263,8 +272,12 @@ export default class PoopInvadersChallenge extends Component {
       if (enemyOnLeftBoundary) { newDirection = Directions.Right }
       if (enemyOnRightBoundary) { newDirection = Directions.Left }
     }
-    
-    this.setState({ map: newMap, direction: newDirection })
+
+    if (newMap[newMap.length - 1][this.state.characterIndex] === TileTypes.Enemy) {
+      this.gameOver()
+    } else {
+      this.setState({ map: newMap, direction: newDirection })
+    }
   }
 
   moveMissiles() {
@@ -314,7 +327,8 @@ export default class PoopInvadersChallenge extends Component {
   }
 
   gameOver() {
-    // game over
+    this.cancelIntervals()
+    this.setState(defaultState, () => this.setIntervals())
   }
 
   render() {
@@ -373,6 +387,9 @@ export default class PoopInvadersChallenge extends Component {
             <li>Left Arrow: move left</li>
             <li>Right Arrow: move right</li>
           </ul>
+          <p>
+            Round {this.state.currentRound + 1} of {this.state.numberOfRounds}
+          </p>
         </div>
       </div>
     );

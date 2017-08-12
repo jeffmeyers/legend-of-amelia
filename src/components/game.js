@@ -2,9 +2,10 @@ import React, { Component } from 'react'
 import { times, sample, includes } from 'lodash'
 import PoopInvadersChallenge from './challenges/PoopInvadersChallenge';
 import TuxChallenge from './challenges/TuxChallenge';
+import ISpyChallenge from './challenges/ISpyChallenge';
 import Bounce from 'bounce.js';
 
-import * as map1 from './maps/1'
+import * as map1 from './maps/4'
 
 const safeGet = (matrix, row, column) => {
   if (!matrix) return null
@@ -132,7 +133,8 @@ const EnemyTile = (props) => (
 
 const CitizenTile = (props) => (
   <div style={Object.assign({}, TILE_STYLE, {
-    background: 'magenta'
+    background: props.character ? `url(${props.character})` : 'magenta',
+    backgroundSize: 'cover',
   })} />
 )
 
@@ -202,7 +204,7 @@ const defaultState = {
   map: map1,
   characterOrientation: CharacterOrientations.Down,
   message: null,
-  challenge: null,
+  challenge: ISpyChallenge,
   numHearts: 10,
   letters: [],
   justStarted: true,
@@ -475,7 +477,7 @@ export default class Game extends Component {
         position: 'absolute',
         width: '640px'
       }}>
-        {this.state.justStarted && <Intro opacity={this.state.introOpacity} />}  
+        {/* {this.state.justStarted && <Intro opacity={this.state.introOpacity} />}   */}
         {this.state.numHearts === 0 && <Gameover restart={this.restart} />}
         <div className="map" style={{
           float: 'left',
@@ -502,7 +504,7 @@ export default class Game extends Component {
                     return <EnemyTile key={columnIndex} />
                   }
                   case TileTypes.Citizen: {
-                    return <CitizenTile key={columnIndex} />
+                    return <CitizenTile key={columnIndex} character={this.state.map.character} />
                   }
                   default: {
                     return <MovableTile key={columnIndex} />

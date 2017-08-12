@@ -1,11 +1,13 @@
 import * as map3 from './3'
 import * as map5 from './5'
 import * as map6 from './6'
-import TuxChallenge from '../challenges/TuxChallenge';
+import ISpyChallenge from '../challenges/ISpyChallenge';
 
 export const name = 'map3';
 
-export const background = require('../../maps/13.png');
+export const background = require('../../maps/13.png')
+
+export const character = require('../../mailmain.png')
 
 export const tiles = [
   [ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 ],
@@ -16,9 +18,9 @@ export const tiles = [
   [ 2, 2, 0, 2, 0, 0, 2, 0, 0, 2, 0, 0, 2, 0, 4, 2 ],
   [ 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2 ],
   [ 2, 2, 0, 2, 0, 0, 2, 0, 0, 2, 0, 0, 2, 0, 2, 2 ],
-  [ 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2 ],
+  [ 2, 2, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2 ],
   [ 2, 2, 2, 2, 2, 2, 2, 4, 4, 2, 2, 2, 2, 2, 2, 2 ],
-];
+]
 
 export const doors = [
   [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
@@ -31,7 +33,7 @@ export const doors = [
   [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
   [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
   [ 0, 0, 0, 0, 0, 0, 0, map6, map6, 0, 0, 0, 0, 0, 0, 0 ],
-];
+]
 
 export const interactions = [
   [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
@@ -44,7 +46,7 @@ export const interactions = [
   [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
   [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
   [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-];
+]
 
 export const challenges = [
   [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
@@ -55,6 +57,6 @@ export const challenges = [
   [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
   [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
   [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, ISpyChallenge, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
   [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-];
+]
