@@ -5,7 +5,7 @@ import TuxChallenge from './challenges/TuxChallenge';
 import ISpyChallenge from './challenges/ISpyChallenge';
 import Bounce from 'bounce.js';
 
-import * as map1 from './maps/1'
+import * as map1 from './maps/4'
 
 const safeGet = (matrix, row, column) => {
   if (!matrix) return null
@@ -354,7 +354,14 @@ export default class Game extends Component {
     }
 
     const challenge = safeGet(map.challenges, nextRowIndex, nextColumnIndex)
-    const message = safeGet(map.interactions, nextRowIndex, nextColumnIndex)
+    let message = safeGet(map.interactions, nextRowIndex, nextColumnIndex)
+    if (message && typeof message === 'function') {
+      message = message(this.state.inventory, (clue) => {
+        this.setState({
+          clues: uniq([...this.state.clues, clue]),
+        })
+      })
+    }
     this.setState({ message, challenge })
   }
 
