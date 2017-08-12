@@ -1000,6 +1000,10 @@ boom@2.x.x:
   dependencies:
     hoek "2.x.x"
 
+bounce.js@^0.8.2:
+  version "0.8.2"
+  resolved "https://registry.yarnpkg.com/bounce.js/-/bounce.js-0.8.2.tgz#3e9ebce253e72b42f4178b5c81db48538d674a83"
+
 boxen@^0.6.0:
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/boxen/-/boxen-0.6.0.tgz#8364d4248ac34ff0ef1b2f2bf49a6c60ce0d81b6"
