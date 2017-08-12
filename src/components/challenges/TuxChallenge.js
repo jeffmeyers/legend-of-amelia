@@ -84,6 +84,12 @@ export default class TuxChallenge extends Component {
         that my age corresponded to both the code and the position of a treasure box. I wonder
         if that could be helpful?
         `);
+        this.props.grantClue(
+          `
+          The boy who got a dog for his birthday said his age corresponds to both the code
+          and number position.
+          `
+        )
       }
     })
   }

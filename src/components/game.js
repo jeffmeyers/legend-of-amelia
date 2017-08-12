@@ -5,7 +5,7 @@ import TuxChallenge from './challenges/TuxChallenge';
 import ISpyChallenge from './challenges/ISpyChallenge';
 import Bounce from 'bounce.js';
 
-import * as map1 from './maps/4'
+import * as map1 from './maps/1'
 
 const safeGet = (matrix, row, column) => {
   if (!matrix) return null
@@ -204,13 +204,14 @@ const defaultState = {
   map: map1,
   characterOrientation: CharacterOrientations.Down,
   message: null,
-  challenge: ISpyChallenge,
+  challenge: null,
   numHearts: 10,
   letters: [],
   justStarted: true,
   introOpacity: 1.0,
   completedChallenges: [],
   inventory: [],
+  clues: [],
 }
 
 export default class Game extends Component {
@@ -473,6 +474,11 @@ export default class Game extends Component {
             inventory: uniq([...this.state.inventory, item]),
           })
         }}
+        grantClue={(clue) => {
+          this.setState({
+            clues: uniq([...this.state.clues, clue]),
+          })
+        }}
       />
     )
   }
@@ -528,22 +534,6 @@ export default class Game extends Component {
           {this.state.challenge && this.renderChallenge()}
         </div>
         <div style={{
-          clear: 'left',
-          fontSize: '48px',
-          textAlign: 'center',
-          width: '650px',
-          paddingTop: '10px'
-        }}>
-          {times(this.state.numHearts, () => '❤️')}
-          {times(10 - this.state.numHearts, () => (
-            <span style={{
-              opacity: '0.5'
-            }}>
-              💔
-            </span>
-          ))}
-        </div>
-        <div style={{
           fontSize: '48px',
           color: 'white',
           textAlign: 'center',
@@ -563,6 +553,20 @@ export default class Game extends Component {
           {includes(this.state.inventory, 'chickens') &&
             '🐓'
           }
+        </div>
+        <div style={{
+          fontSize: '16px',
+          color: 'white',
+          textAlign: 'center',
+          width: '650px',
+        }}>
+          <ul>
+            {this.state.clues.map((clue, idx) => (
+              <li key={idx}>
+                {clue}
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     )

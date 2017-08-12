@@ -1,6 +1,13 @@
 import React, { Component } from 'react'
 
 const picture = require('../../ispy.png')
+const key = require('../../key.png')
+
+const Clue = () => (
+  <p>
+    The mailman said something about this key is important. I wonder what? <img src={key} />
+  </p>
+)
 
 export default class ISpyChallenge extends Component {
   pass() {
@@ -18,6 +25,7 @@ export default class ISpyChallenge extends Component {
       `
     )
     this.props.grantInventory('chickens')
+    this.props.grantClue(<Clue />)
   }
 
   render() {
@@ -50,7 +58,7 @@ export default class ISpyChallenge extends Component {
             position: 'absolute',
             top: '28px',
             left: '108px',
-            opacity: 0.5,
+            opacity: 0,
           }}
           onClick={() => this.pass()}
           />
